@@ -27,6 +27,7 @@ const panes = {
 
 const pinsListEl      = document.getElementById('pins-list');
 const pinsEmptyEl     = document.getElementById('pins-empty');
+const btnPackPage     = document.getElementById('btn-pack-page');
 const btnExtract      = document.getElementById('btn-extract');
 const contextResultEl = document.getElementById('context-result');
 
@@ -118,9 +119,11 @@ function setUnsupported() {
 
 function disableFeatureButtons() {
   btnExtract.disabled = true;
+  btnPackPage.disabled = true;
 }
 function enableFeatureButtons() {
   btnExtract.disabled = false;
+  btnPackPage.disabled = false;
 }
 
 // ── Live sync with in-page toolbar actions ────────────────────────────────────
@@ -169,6 +172,17 @@ function renderPins(pins) {
 
     const actions = document.createElement('div');
     actions.className = 'sp-card-actions';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'sp-card-action-btn';
+    copyBtn.textContent = 'Copy';
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(pin.text).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+      });
+    });
+
     const unpinBtn = document.createElement('button');
     unpinBtn.className = 'sp-card-action-btn';
     unpinBtn.textContent = 'Remove from Pack';
@@ -178,6 +192,8 @@ function renderPins(pins) {
         chrome.tabs.sendMessage(activeTabId, { type: 'ANYLLM_SYNC_PINS' });
       }
     });
+
+    actions.appendChild(copyBtn);
     actions.appendChild(unpinBtn);
 
     li.appendChild(head);
@@ -186,6 +202,27 @@ function renderPins(pins) {
     pinsListEl.appendChild(li);
   }
 }
+
+// ── Pack the whole page (instead of message-by-message) ───────────────────────
+
+btnPackPage.addEventListener('click', () => {
+  if (!activeTabId) return;
+  btnPackPage.disabled = true;
+  btnPackPage.textContent = 'Packing…';
+
+  chrome.tabs.sendMessage(activeTabId, { type: 'ANYLLM_PACK_PAGE' }, (response) => {
+    btnPackPage.disabled = false;
+    btnPackPage.textContent = '📦 Pack Whole Chat';
+
+    if (chrome.runtime.lastError || !response?.success) {
+      console.error('[AnyLLM] Pack whole page failed:', response?.error || chrome.runtime.lastError);
+      return;
+    }
+    // chrome.storage.onChanged will also pick this up, but refresh immediately
+    // for instant feedback rather than waiting on the event round-trip.
+    loadPins();
+  });
+});
 
 // ── Context extraction & handoff ──────────────────────────────────────────────
 

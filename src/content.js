@@ -266,6 +266,21 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     return true;
   }
 
+  // Pack the whole page/conversation as one entry, instead of message-by-message
+  if (request?.type === 'ANYLLM_PACK_PAGE') {
+    if (!adapter) {
+      sendResponse({ success: false, error: 'No adapter active on this page.' });
+      return true;
+    }
+    packWholePage(adapter)
+      .then((pin) => sendResponse({ success: true, pin }))
+      .catch((err) => {
+        console.error(`${LOG_PREFIX} Pack whole page failed:`, err);
+        sendResponse({ success: false, error: err.message });
+      });
+    return true;
+  }
+
   return false;
 });
 
@@ -526,6 +541,53 @@ async function syncPinnedRings(platform, conversationId) {
   document.querySelectorAll('[data-anyllm-msg-id]').forEach((el) => {
     const id = el.getAttribute('data-anyllm-msg-id');
     MessageToolbar.setMessagePinnedState(id, pinnedIds.has(id));
+  });
+}
+
+/**
+ * Pack the ENTIRE page/conversation as a single Pack entry, instead of
+ * requiring the user to click the per-message toolbar button on each turn.
+ *
+ * Tries the adapter's normal per-message parsing first (nicely role-labeled).
+ * If that yields nothing usable — e.g. a platform's DOM selectors are stale —
+ * falls back to the chat container's (or the whole page's) raw visible text,
+ * so this always captures *something* even when per-message parsing is broken.
+ *
+ * @param {import('./services/adapter.js').PlatformAdapter} adapterRef
+ * @returns {Promise<import('./services/types.js').Pin>}
+ */
+async function packWholePage(adapterRef) {
+  const platform       = adapterRef.getPlatformIdentifier();
+  const conversationId = adapterRef.getConversationId();
+
+  const elements = adapterRef.getMessageElements();
+  const messages = elements
+    .map((el, idx) => adapterRef.extractMessageData(el, idx))
+    .filter((data) => data && data.text && data.text.trim());
+
+  let text;
+  if (messages.length > 0) {
+    text = messages
+      .map((m) => `[${m.role.toUpperCase()}]\n${m.text.trim()}`)
+      .join('\n\n');
+    console.log(`${LOG_PREFIX} Packed whole page from ${messages.length} parsed message(s).`);
+  } else {
+    // Per-message parsing found nothing — fall back to raw visible text.
+    const container = adapterRef.getChatContainer() || document.body;
+    text = (container.innerText || container.textContent || '').trim();
+    console.log(`${LOG_PREFIX} Packed whole page via raw text fallback (per-message parsing found nothing).`);
+  }
+
+  if (!text) {
+    throw new Error('Could not find any text on this page to pack.');
+  }
+
+  return PinService.pinMessage({
+    messageId: `page::${Date.now()}`,
+    platform,
+    conversationId,
+    role: 'page',
+    text,
   });
 }
 

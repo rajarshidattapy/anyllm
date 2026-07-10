@@ -157,6 +157,45 @@ export class PlatformAdapter {
       `anyllm-msg-${index}`
     );
   }
+
+  /**
+   * Last-resort message-turn detection when every known selector for a
+   * platform's redesigned DOM has failed: walk the chat container's children
+   * (and, if too few qualify, one level deeper) and keep whatever has enough
+   * visible text to plausibly be a message turn.
+   *
+   * This exists so that a site redesign degrades to "still finds messages,
+   * role detection may be less accurate" instead of "the extension does
+   * nothing at all."
+   *
+   * @protected
+   * @param {Element | null} container
+   * @param {{ minTextLength?: number }} [options]
+   * @returns {Element[]}
+   */
+  _deriveGenericTurns(container, { minTextLength = 10 } = {}) {
+    if (!container) return [];
+
+    const isSubstantial = (el) => {
+      if (!el || el.nodeType !== 1) return false;
+      const tag = el.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'BUTTON' || tag === 'SVG') return false;
+      const text = (el.innerText || el.textContent || '').trim();
+      return text.length >= minTextLength;
+    };
+
+    const direct = Array.from(container.children).filter(isSubstantial);
+    if (direct.length >= 2) return direct;
+
+    // Too few direct children qualified — look one level deeper.
+    const nested = [];
+    Array.from(container.children).forEach((child) => {
+      Array.from(child.children || []).forEach((grandchild) => {
+        if (isSubstantial(grandchild)) nested.push(grandchild);
+      });
+    });
+    return nested;
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -247,11 +286,17 @@ export class ClaudeAdapter extends PlatformAdapter {
     }
 
     // Class-fragment fallbacks
-    return this._queryAll([
+    const byClassFragment = this._queryAll([
       '[class*="human-turn"]',
       '[class*="ai-turn"]',
       '[class*="ConversationItem"]',
     ]);
+    if (byClassFragment.length > 0) return byClassFragment;
+
+    // Last resort: Claude's selectors above are guesses about a DOM we can't
+    // verify from here — if the site changed, fall back to generic detection
+    // rather than finding nothing at all.
+    return this._deriveGenericTurns(this.getChatContainer());
   }
 
   /**
@@ -653,7 +698,13 @@ export class GeminiAdapter extends PlatformAdapter {
     if (listItems.length > 0) return listItems;
 
     // Tertiary: class-fragment approach
-    return this._queryAll(['[class*="conversation-turn"]']);
+    const byClassFragment = this._queryAll(['[class*="conversation-turn"]']);
+    if (byClassFragment.length > 0) return byClassFragment;
+
+    // Last resort: Gemini's selectors above are guesses about a DOM we can't
+    // verify from here — if the site changed, fall back to generic detection
+    // rather than finding nothing at all.
+    return this._deriveGenericTurns(this.getChatContainer());
   }
 
   /**
