@@ -1,11 +1,11 @@
 {
-  "name": "lm-source-extension",
+  "name": "anyllm-browser",
   "version": "1.1.0",
   "description": "Enhance your LLM experience on Claude.ai and ChatGPT with context extraction, pinning, editing, and cross-platform handoff.",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "zip": "npm run build && cd dist && zip -r ../lm-source-v1.1.0.zip . && echo 'Zipped: lm-source-v1.1.0.zip'"
+    "zip": "npm run build && cd dist && zip -r ../anyllm-browser-v1.1.0.zip . && echo 'Zipped: anyllm-browser-v1.1.0.zip'"
   },
   "devDependencies": {
     "vite": "^6.0.0",

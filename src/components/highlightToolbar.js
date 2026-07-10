@@ -1,5 +1,5 @@
 // src/components/highlightToolbar.js
-// LM-Source — Highlight Selection Toolbar (P2.6)
+// AnyLLM — Highlight Selection Toolbar (P2.6)
 //
 // Shows a floating toolbar with colour swatches when text is selected within
 // a message container. Clicking a swatch saves the highlight via HighlightService.
@@ -8,7 +8,7 @@
 
 import HighlightService from '../services/highlightService.js';
 
-const TOOLBAR_ID = 'lms-highlight-toolbar';
+const TOOLBAR_ID = 'anyllm-highlight-toolbar';
 
 let _adapterRef = null;
 let _platform = null;
@@ -34,12 +34,12 @@ function ensureStyles() {
       transform: translateY(5px);
       opacity: 0;
     }
-    #${TOOLBAR_ID}.lms-visible {
+    #${TOOLBAR_ID}.anyllm-visible {
       display: flex;
       transform: translateY(0);
       opacity: 1;
     }
-    .lms-swatch {
+    .anyllm-swatch {
       width: 18px;
       height: 18px;
       border-radius: 50%;
@@ -47,13 +47,13 @@ function ensureStyles() {
       border: 2px solid transparent;
       transition: transform 0.1s ease, border-color 0.1s ease;
     }
-    .lms-swatch:hover {
+    .anyllm-swatch:hover {
       transform: scale(1.15);
       border-color: rgba(255, 255, 255, 0.6);
     }
-    .lms-swatch[data-color="yellow"] { background-color: #facc15; }
-    .lms-swatch[data-color="green"]  { background-color: #4ade80; }
-    .lms-swatch[data-color="red"]    { background-color: #f87171; }
+    .anyllm-swatch[data-color="yellow"] { background-color: #facc15; }
+    .anyllm-swatch[data-color="green"]  { background-color: #4ade80; }
+    .anyllm-swatch[data-color="red"]    { background-color: #f87171; }
   `;
   document.head.appendChild(style);
 }
@@ -69,7 +69,7 @@ function createToolbar() {
   const colors = ['yellow', 'green', 'red'];
   for (const c of colors) {
     const swatch = document.createElement('div');
-    swatch.className = 'lms-swatch';
+    swatch.className = 'anyllm-swatch';
     swatch.dataset.color = c;
     swatch.title = `Highlight ${c}`;
     
@@ -110,10 +110,10 @@ async function handleSwatchClick(color) {
 function hideToolbar() {
   const toolbar = document.getElementById(TOOLBAR_ID);
   if (toolbar) {
-    toolbar.classList.remove('lms-visible');
+    toolbar.classList.remove('anyllm-visible');
     // Short delay before setting display: none to allow CSS transition
     setTimeout(() => {
-      if (!toolbar.classList.contains('lms-visible')) {
+      if (!toolbar.classList.contains('anyllm-visible')) {
         toolbar.style.display = 'none';
       }
     }, 150);
@@ -134,7 +134,7 @@ function showToolbar(rect) {
 
   // Trigger reflow
   toolbar.offsetHeight; 
-  toolbar.classList.add('lms-visible');
+  toolbar.classList.add('anyllm-visible');
 }
 
 /**
@@ -161,7 +161,7 @@ function onMouseUp(e) {
   let msgRoot = range.commonAncestorContainer;
   if (msgRoot.nodeType === Node.TEXT_NODE) msgRoot = msgRoot.parentNode;
   
-  const container = msgRoot.closest('[data-lms-msg-id]');
+  const container = msgRoot.closest('[data-anyllm-msg-id]');
   if (!container) {
     hideToolbar();
     return;
@@ -170,7 +170,7 @@ function onMouseUp(e) {
   // Found a valid selection
   activeSelectionRange = range.cloneRange();
   activeMessageRoot = container;
-  activeMessageId = container.getAttribute('data-lms-msg-id');
+  activeMessageId = container.getAttribute('data-anyllm-msg-id');
 
   const rect = range.getBoundingClientRect();
   showToolbar(rect);
@@ -178,7 +178,7 @@ function onMouseUp(e) {
 
 /**
  * Initialise the selection listener for highlights.
- * @param {import('../adapters/baseAdapter.js').PlatformAdapter} adapterRef 
+ * @param {import('../adapters/adapter.js').PlatformAdapter} adapterRef 
  * @param {string} platform 
  * @param {string} conversationId 
  */

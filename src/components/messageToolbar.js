@@ -1,5 +1,5 @@
 // src/components/messageToolbar.js
-// LM-Source — Per-Message Hover Toolbar (P2.3 foundation, extended in P2.4/P2.5)
+// AnyLLM — Per-Message Hover Toolbar (P2.3 foundation, extended in P2.4/P2.5)
 //
 // Injects a small floating action toolbar onto each message element on hover.
 // The toolbar is shared infrastructure for:
@@ -10,17 +10,17 @@
 // Design principles:
 //   • One toolbar element per page; re-positioned via CSS `position: fixed`
 //     following the hovered message — avoids thousands of DOM nodes.
-//   • Injected styles are namespaced with `lms-tb-` to avoid host-page conflicts.
+//   • Injected styles are namespaced with `anyllm-tb-` to avoid host-page conflicts.
 //   • Buttons fire callbacks registered via `registerAction(id, config)`.
 
 'use strict';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const TOOLBAR_ID     = 'lms-msg-toolbar';
-const STYLE_ID       = 'lms-toolbar-styles';
-const DATA_MSG_ID    = 'data-lms-msg-id';
-const DATA_ROLE      = 'data-lms-role';
+const TOOLBAR_ID     = 'anyllm-msg-toolbar';
+const STYLE_ID       = 'anyllm-toolbar-styles';
+const DATA_MSG_ID    = 'data-anyllm-msg-id';
+const DATA_ROLE      = 'data-anyllm-role';
 
 // How many px above the top-right corner of the message the toolbar floats
 const TOOLBAR_OFFSET_Y = 6;
@@ -48,11 +48,11 @@ function buildStyles() {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-#${TOOLBAR_ID}.lms-tb-visible {
+#${TOOLBAR_ID}.anyllm-tb-visible {
   display: flex;
 }
 
-.lms-tb-btn {
+.anyllm-tb-btn {
   background: transparent;
   border: none;
   cursor: pointer;
@@ -65,30 +65,30 @@ function buildStyles() {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.lms-tb-btn:hover {
+.anyllm-tb-btn:hover {
   background: rgba(99, 102, 241, 0.15);
   color: #c7d2fe;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
-.lms-tb-btn:active {
+.anyllm-tb-btn:active {
   transform: translateY(0);
 }
-.lms-tb-btn.lms-tb-active {
+.anyllm-tb-btn.anyllm-tb-active {
   color: #818cf8;
   background: rgba(99,102,241,0.18);
 }
-.lms-tb-btn.lms-tb-pinned {
+.anyllm-tb-btn.anyllm-tb-pinned {
   color: #f59e0b;
 }
-.lms-tb-btn.lms-tb-pinned:hover {
+.anyllm-tb-btn.anyllm-tb-pinned:hover {
   color: #fbbf24;
   background: rgba(245,158,11,0.15);
 }
 
 /* Tooltip */
-.lms-tb-btn::after {
+.anyllm-tb-btn::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 6px);
@@ -106,10 +106,10 @@ function buildStyles() {
   opacity: 0;
   transition: opacity 0.15s;
 }
-.lms-tb-btn:hover::after { opacity: 1; }
+.anyllm-tb-btn:hover::after { opacity: 1; }
 
 /* Divider between button groups */
-.lms-tb-divider {
+.anyllm-tb-divider {
   width: 1px;
   height: 16px;
   background: rgba(255,255,255,0.08);
@@ -117,7 +117,7 @@ function buildStyles() {
 }
 
 /* Pinned-message highlight ring on the message itself */
-[data-lms-pinned="true"] {
+[data-anyllm-pinned="true"] {
   outline: 2px solid rgba(245, 158, 11, 0.3) !important;
   outline-offset: 2px !important;
   border-radius: 4px;
@@ -153,7 +153,7 @@ function createToolbar() {
   const toolbar = document.createElement('div');
   toolbar.id = TOOLBAR_ID;
   toolbar.setAttribute('role', 'toolbar');
-  toolbar.setAttribute('aria-label', 'LM-Source message actions');
+  toolbar.setAttribute('aria-label', 'AnyLLM message actions');
   document.body.appendChild(toolbar);
 
   // Keep toolbar visible while cursor is over it
@@ -218,14 +218,14 @@ function renderToolbar(role, messageId, pinnedSet = new Map()) {
       // Add a subtle divider between groups if action has `groupBefore: true`
       if (cfg.groupBefore) {
         const div = document.createElement('span');
-        div.className = 'lms-tb-divider';
+        div.className = 'anyllm-tb-divider';
         toolbar.appendChild(div);
       }
     }
     first = false;
 
     const btn = document.createElement('button');
-    btn.className = 'lms-tb-btn';
+    btn.className = 'anyllm-tb-btn';
     btn.dataset.action = actionId;
     btn.setAttribute('data-tooltip', cfg.tooltip);
     btn.setAttribute('aria-label', cfg.tooltip);
@@ -233,7 +233,7 @@ function renderToolbar(role, messageId, pinnedSet = new Map()) {
 
     // Apply active / pinned state
     if (actionId === 'pin' && pinnedSet.has(messageId)) {
-      btn.classList.add('lms-tb-pinned');
+      btn.classList.add('anyllm-tb-pinned');
       btn.setAttribute('data-tooltip', 'Unpin message');
       btn.setAttribute('aria-label', 'Unpin message');
     }
@@ -251,13 +251,13 @@ function renderToolbar(role, messageId, pinnedSet = new Map()) {
 
 function showToolbar() {
   clearTimeout(_hideTimer);
-  getToolbar()?.classList.add('lms-tb-visible');
+  getToolbar()?.classList.add('anyllm-tb-visible');
 }
 
 function scheduleHide(delay = 250) {
   clearTimeout(_hideTimer);
   _hideTimer = setTimeout(() => {
-    getToolbar()?.classList.remove('lms-tb-visible');
+    getToolbar()?.classList.remove('anyllm-tb-visible');
     _currentEl = null;
   }, delay);
 }
@@ -274,8 +274,8 @@ function scheduleHide(delay = 250) {
  */
 function attachToMessage(el, messageId, role, getPinnedSet) {
   // Idempotent — don't double-bind
-  if (el.dataset.lmsBound === '1') return;
-  el.dataset.lmsBound = '1';
+  if (el.dataset.anyllmBound === '1') return;
+  el.dataset.anyllmBound = '1';
   el.setAttribute(DATA_MSG_ID, messageId);
   el.setAttribute(DATA_ROLE, role);
 
@@ -309,9 +309,9 @@ function setMessagePinnedState(messageId, isPinned) {
   const el = document.querySelector(`[${DATA_MSG_ID}="${messageId}"]`);
   if (!el) return;
   if (isPinned) {
-    el.setAttribute('data-lms-pinned', 'true');
+    el.setAttribute('data-anyllm-pinned', 'true');
   } else {
-    el.removeAttribute('data-lms-pinned');
+    el.removeAttribute('data-anyllm-pinned');
   }
 }
 

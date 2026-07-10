@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.anyllm/sessions/
+.anyllm/current.md
+.anyllm/index.json
+.claude
+.anyllm
+.env

@@ -1,5 +1,5 @@
 // src/services/deleteService.js
-// LM-Source — Delete Service (P2.4)
+// AnyLLM — Delete Service (P2.4)
 //
 // Implements a purely view-layer soft-delete: message elements are hidden in
 // the DOM with a CSS class; the message IDs are persisted in storage so the
@@ -35,9 +35,9 @@ import {
 
 // ── CSS class & style injection ───────────────────────────────────────────────
 
-const HIDDEN_CLASS   = 'lms-deleted-hidden';
-const REVEALED_CLASS = 'lms-deleted-revealed';
-const STYLE_ID       = 'lms-delete-styles';
+const HIDDEN_CLASS   = 'anyllm-deleted-hidden';
+const REVEALED_CLASS = 'anyllm-deleted-revealed';
+const STYLE_ID       = 'anyllm-delete-styles';
 
 /**
  * Inject the global CSS rules for soft-deleted messages (once).
@@ -47,7 +47,7 @@ function ensureStyles() {
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = `
-/* LM-Source — soft-deleted message state */
+/* AnyLLM — soft-deleted message state */
 
 /* Hidden: collapse with a fade-out and a subtle placeholder */
 .${HIDDEN_CLASS} {
@@ -91,7 +91,7 @@ function ensureStyles() {
 }
 
 /* Bulk-select checkbox overlay on message hover */
-.lms-bulk-checkbox {
+.anyllm-bulk-checkbox {
   position: absolute;
   top: 10px;
   left: -28px;
@@ -103,15 +103,15 @@ function ensureStyles() {
   opacity: 0;
   transition: opacity 0.15s;
 }
-.lms-bulk-mode [data-lms-msg-id] {
+.anyllm-bulk-mode [data-anyllm-msg-id] {
   position: relative;
 }
-.lms-bulk-mode .lms-bulk-checkbox {
+.anyllm-bulk-mode .anyllm-bulk-checkbox {
   opacity: 1;
 }
 
 /* Bulk-mode banner */
-#lms-bulk-banner {
+#anyllm-bulk-banner {
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -130,11 +130,11 @@ function ensureStyles() {
   color: #e2e8f0;
   backdrop-filter: blur(10px);
 }
-#lms-bulk-banner-count {
+#anyllm-bulk-banner-count {
   color: #f87171;
   font-weight: 700;
 }
-.lms-bulk-action-btn {
+.anyllm-bulk-action-btn {
   padding: 6px 16px;
   border-radius: 8px;
   border: none;
@@ -143,17 +143,17 @@ function ensureStyles() {
   cursor: pointer;
   transition: all 0.15s;
 }
-.lms-bulk-action-btn.delete {
+.anyllm-bulk-action-btn.delete {
   background: linear-gradient(135deg, #dc2626, #ef4444);
   color: #fff;
 }
-.lms-bulk-action-btn.delete:hover { background: linear-gradient(135deg, #b91c1c, #dc2626); }
-.lms-bulk-action-btn.cancel {
+.anyllm-bulk-action-btn.delete:hover { background: linear-gradient(135deg, #b91c1c, #dc2626); }
+.anyllm-bulk-action-btn.cancel {
   background: rgba(255,255,255,0.06);
   color: #94a3b8;
   border: 1px solid rgba(255,255,255,0.1);
 }
-.lms-bulk-action-btn.cancel:hover { background: rgba(255,255,255,0.1); }
+.anyllm-bulk-action-btn.cancel:hover { background: rgba(255,255,255,0.1); }
 `;
   document.head.appendChild(style);
 }
@@ -166,7 +166,7 @@ const _listeners = new Set();
 function _notify(event, detail) {
   _listeners.forEach(cb => {
     try { cb(event, detail); } catch (e) {
-      console.error('[LM-Source][DeleteService] Listener error:', e);
+      console.error('[AnyLLM][DeleteService] Listener error:', e);
     }
   });
 }
@@ -223,7 +223,7 @@ async function _saveRecords(platform, conversationId, records) {
  * @returns {Element | null}
  */
 function _findElement(messageId) {
-  return document.querySelector(`[data-lms-msg-id="${messageId}"]`);
+  return document.querySelector(`[data-anyllm-msg-id="${messageId}"]`);
 }
 
 /**
@@ -271,7 +271,7 @@ async function softDeleteMessage(messageId, platform, conversationId) {
   const el = _findElement(messageId);
   if (el) _hideElement(el);
 
-  console.log(`[LM-Source][DeleteService] Soft-deleted message ${messageId}`);
+  console.log(`[AnyLLM][DeleteService] Soft-deleted message ${messageId}`);
   _notify('deleted', { messageId, platform, conversationId });
   return record;
 }
@@ -295,7 +295,7 @@ async function restoreMessage(messageId, platform, conversationId) {
   const el = _findElement(messageId);
   if (el) _showElement(el);
 
-  console.log(`[LM-Source][DeleteService] Restored message ${messageId}`);
+  console.log(`[AnyLLM][DeleteService] Restored message ${messageId}`);
   _notify('restored', { messageId, platform, conversationId });
   return true;
 }
@@ -351,7 +351,7 @@ async function softDeleteBulk(messageIds, platform, conversationId) {
     if (el) _hideElement(el);
   }
 
-  console.log(`[LM-Source][DeleteService] Bulk-deleted ${newRecords.length} message(s)`);
+  console.log(`[AnyLLM][DeleteService] Bulk-deleted ${newRecords.length} message(s)`);
   _notify('bulkDeleted', { messageIds, platform, conversationId });
 }
 
@@ -369,7 +369,7 @@ async function restoreAll(platform, conversationId) {
     if (el) _showElement(el);
   }
   await _saveRecords(platform, conversationId, []);
-  console.log(`[LM-Source][DeleteService] Restored all ${records.length} deleted message(s)`);
+  console.log(`[AnyLLM][DeleteService] Restored all ${records.length} deleted message(s)`);
   _notify('restoredAll', { platform, conversationId });
 }
 
@@ -380,7 +380,7 @@ async function restoreAll(platform, conversationId) {
  * Must be called AFTER the adapter has populated the DOM with message elements
  * (i.e. after the MutationObserver has fired the initial processCurrentMessages).
  *
- * @param {import('../adapters/baseAdapter.js').PlatformAdapter} adapterRef
+ * @param {import('../adapters/adapter.js').PlatformAdapter} adapterRef
  * @param {string} platform
  * @param {string} conversationId
  * @returns {Promise<number>} count of elements re-hidden
@@ -399,13 +399,13 @@ async function applyDeletedState(adapterRef, platform, conversationId) {
     if (!data) return;
     if (deletedIds.has(data.messageId)) {
       // Stamp the data attribute so _findElement works later
-      el.setAttribute('data-lms-msg-id', data.messageId);
+      el.setAttribute('data-anyllm-msg-id', data.messageId);
       _hideElement(el);
       count++;
     }
   });
 
-  console.log(`[LM-Source][DeleteService] Re-applied hidden state to ${count} message(s) after load`);
+  console.log(`[AnyLLM][DeleteService] Re-applied hidden state to ${count} message(s) after load`);
   return count;
 }
 
@@ -431,16 +431,16 @@ function enterBulkMode(messageElements, onCommit) {
   _onBulkCommit  = onCommit;
 
   ensureStyles();
-  document.body.classList.add('lms-bulk-mode');
+  document.body.classList.add('anyllm-bulk-mode');
 
   // Inject checkboxes into each message element
   messageElements.forEach(el => {
-    const msgId = el.getAttribute('data-lms-msg-id');
+    const msgId = el.getAttribute('data-anyllm-msg-id');
     if (!msgId) return;
 
     const cb = document.createElement('input');
     cb.type      = 'checkbox';
-    cb.className = 'lms-bulk-checkbox';
+    cb.className = 'anyllm-bulk-checkbox';
     cb.dataset.msgId = msgId;
     cb.addEventListener('change', () => {
       if (cb.checked) {
@@ -457,29 +457,29 @@ function enterBulkMode(messageElements, onCommit) {
 }
 
 function _showBulkBanner() {
-  if (document.getElementById('lms-bulk-banner')) return;
+  if (document.getElementById('anyllm-bulk-banner')) return;
 
   const banner = document.createElement('div');
-  banner.id = 'lms-bulk-banner';
+  banner.id = 'anyllm-bulk-banner';
   banner.innerHTML = `
-    <span>Selected: <strong id="lms-bulk-banner-count">0</strong> message(s)</span>
-    <button class="lms-bulk-action-btn delete" id="lms-bulk-delete-btn">🗑 Delete Selected</button>
-    <button class="lms-bulk-action-btn cancel" id="lms-bulk-cancel-btn">Cancel</button>
+    <span>Selected: <strong id="anyllm-bulk-banner-count">0</strong> message(s)</span>
+    <button class="anyllm-bulk-action-btn delete" id="anyllm-bulk-delete-btn">🗑 Delete Selected</button>
+    <button class="anyllm-bulk-action-btn cancel" id="anyllm-bulk-cancel-btn">Cancel</button>
   `;
   document.body.appendChild(banner);
 
-  document.getElementById('lms-bulk-delete-btn').addEventListener('click', () => {
+  document.getElementById('anyllm-bulk-delete-btn').addEventListener('click', () => {
     const ids = [..._bulkSelection];
     if (ids.length === 0) return;
     if (typeof _onBulkCommit === 'function') _onBulkCommit(ids);
     exitBulkMode();
   });
 
-  document.getElementById('lms-bulk-cancel-btn').addEventListener('click', exitBulkMode);
+  document.getElementById('anyllm-bulk-cancel-btn').addEventListener('click', exitBulkMode);
 }
 
 function _updateBulkBanner() {
-  const countEl = document.getElementById('lms-bulk-banner-count');
+  const countEl = document.getElementById('anyllm-bulk-banner-count');
   if (countEl) countEl.textContent = String(_bulkSelection.size);
 }
 
@@ -491,9 +491,9 @@ function exitBulkMode() {
   _bulkSelection = new Set();
   _onBulkCommit  = null;
 
-  document.body.classList.remove('lms-bulk-mode');
-  document.querySelectorAll('.lms-bulk-checkbox').forEach(el => el.remove());
-  document.getElementById('lms-bulk-banner')?.remove();
+  document.body.classList.remove('anyllm-bulk-mode');
+  document.querySelectorAll('.anyllm-bulk-checkbox').forEach(el => el.remove());
+  document.getElementById('anyllm-bulk-banner')?.remove();
 }
 
 /** @returns {boolean} */

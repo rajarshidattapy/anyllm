@@ -1,5 +1,5 @@
 // src/services/contextExtractor.js
-// LM-Source — Context Extractor Service (P2.2)
+// AnyLLM — Context Extractor Service (P2.2)
 //
 // Analyses an array of { messageId, role, text } message objects from a
 // platform adapter and produces a rich ExtractedContext result.
@@ -421,14 +421,14 @@ function buildHandoffPrompt(ctx) {
 /**
  * Extract rich context from a set of messages returned by a platform adapter.
  *
- * @param {import('../adapters/baseAdapter.js').PlatformAdapter} adapter
+ * @param {import('../adapters/adapter.js').PlatformAdapter} adapter
  * @returns {ExtractedContext | null}  null if no messages found
  */
 function extractContext(adapter) {
   const elements = adapter.getMessageElements();
 
   if (elements.length === 0) {
-    console.warn('[LM-Source][ContextExtractor] No message elements found.');
+    console.warn('[AnyLLM][ContextExtractor] No message elements found.');
     return null;
   }
 
@@ -439,7 +439,7 @@ function extractContext(adapter) {
     .filter(msg => msg.text && msg.text.trim()); // drop empty messages
 
   if (messages.length === 0) {
-    console.warn('[LM-Source][ContextExtractor] Messages found but text extraction yielded nothing.');
+    console.warn('[AnyLLM][ContextExtractor] Messages found but text extraction yielded nothing.');
     return null;
   }
 
@@ -473,7 +473,7 @@ function extractContext(adapter) {
   ctx.handoffPrompt = buildHandoffPrompt(ctx);
 
   console.log(
-    `[LM-Source][ContextExtractor] Extracted context from ${messages.length} messages. ` +
+    `[AnyLLM][ContextExtractor] Extracted context from ${messages.length} messages. ` +
     `Decisions: ${decisions.length}, Next steps: ${nextSteps.length}, ` +
     `Code blocks: ${codeBlocks.length}, Topics: ${topics.slice(0, 5).join(', ')}`
   );

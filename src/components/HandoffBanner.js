@@ -1,5 +1,5 @@
 // src/components/HandoffBanner.js
-// LM-Source — Token Limit Handoff Banner (P2.7)
+// AnyLLM — Token Limit Handoff Banner (P2.7)
 //
 // A floating banner injected at the top of the chat window when the token limit
 // is approaching/reached. Provides 1-click delivery options for the Handoff Prompt.
@@ -8,8 +8,8 @@
 
 import HandoffService from '../services/handoffService.js';
 
-const BANNER_ID = 'lms-handoff-banner';
-const STYLE_ID  = 'lms-handoff-banner-styles';
+const BANNER_ID = 'anyllm-handoff-banner';
+const STYLE_ID  = 'anyllm-handoff-banner-styles';
 
 let _adapterRef = null;
 let _platform = null;
@@ -39,37 +39,37 @@ function buildStyles() {
       transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
       backdrop-filter: blur(8px);
     }
-    #${BANNER_ID}.lms-banner-visible {
+    #${BANNER_ID}.anyllm-banner-visible {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
-    .lms-banner-header {
+    .anyllm-banner-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-weight: 600;
       color: #c4b5fd;
     }
-    .lms-banner-close {
+    .anyllm-banner-close {
       background: none;
       border: none;
       color: #94a3b8;
       cursor: pointer;
       font-size: 16px;
     }
-    .lms-banner-close:hover { color: #fff; }
-    .lms-banner-text {
+    .anyllm-banner-close:hover { color: #fff; }
+    .anyllm-banner-text {
       font-size: 13px;
       color: #cbd5e1;
       line-height: 1.4;
     }
-    .lms-banner-actions {
+    .anyllm-banner-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 4px;
     }
-    .lms-banner-btn {
+    .anyllm-banner-btn {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
       color: #f1f5f9;
@@ -80,13 +80,13 @@ function buildStyles() {
       cursor: pointer;
       transition: all 0.15s;
     }
-    .lms-banner-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); }
-    .lms-banner-btn.primary {
+    .anyllm-banner-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); }
+    .anyllm-banner-btn.primary {
       background: rgba(139, 92, 246, 0.2);
       border-color: rgba(139, 92, 246, 0.5);
       color: #e0e7ff;
     }
-    .lms-banner-btn.primary:hover {
+    .anyllm-banner-btn.primary:hover {
       background: rgba(139, 92, 246, 0.4);
     }
   `;
@@ -104,7 +104,7 @@ function showBanner() {
   ensureStyles();
   let banner = document.getElementById(BANNER_ID);
   if (banner) {
-    banner.classList.add('lms-banner-visible');
+    banner.classList.add('anyllm-banner-visible');
     return;
   }
 
@@ -112,21 +112,21 @@ function showBanner() {
   banner.id = BANNER_ID;
 
   const header = document.createElement('div');
-  header.className = 'lms-banner-header';
+  header.className = 'anyllm-banner-header';
   header.innerHTML = `<span>⚠️ Token Limit Detected</span>`;
   
   const closeBtn = document.createElement('button');
-  closeBtn.className = 'lms-banner-close';
+  closeBtn.className = 'anyllm-banner-close';
   closeBtn.innerHTML = '✕';
   closeBtn.onclick = hideBanner;
   header.appendChild(closeBtn);
 
   const text = document.createElement('div');
-  text.className = 'lms-banner-text';
+  text.className = 'anyllm-banner-text';
   text.innerHTML = 'You are approaching the context length limit. Would you like to extract the context and handoff to another platform?';
 
   const actions = document.createElement('div');
-  actions.className = 'lms-banner-actions';
+  actions.className = 'anyllm-banner-actions';
 
   const copyBtn = _createBtn('📋 Copy Context', async (btn) => {
     btn.innerHTML = '⏳ Extracting...';
@@ -166,13 +166,13 @@ function showBanner() {
 
   // Trigger animation
   requestAnimationFrame(() => {
-    banner.classList.add('lms-banner-visible');
+    banner.classList.add('anyllm-banner-visible');
   });
 }
 
 function _createBtn(label, onClickAsync) {
   const btn = document.createElement('button');
-  btn.className = 'lms-banner-btn';
+  btn.className = 'anyllm-banner-btn';
   btn.innerHTML = label;
   btn.onclick = () => onClickAsync(btn);
   return btn;
@@ -181,7 +181,7 @@ function _createBtn(label, onClickAsync) {
 function hideBanner() {
   const banner = document.getElementById(BANNER_ID);
   if (banner) {
-    banner.classList.remove('lms-banner-visible');
+    banner.classList.remove('anyllm-banner-visible');
   }
 }
 

@@ -1,5 +1,5 @@
 // src/components/HighlightsPanel.js
-// LM-Source — Highlights Panel (P2.6)
+// AnyLLM — Highlights Panel (P2.6)
 //
 // A sliding side panel that renders all highlights for the current conversation,
 // grouped by colour (Yellow, Green, Red).
@@ -15,8 +15,8 @@
 
 'use strict';
 
-const PANEL_ID      = 'lms-highlights-panel';
-const STYLE_ID      = 'lms-highlights-styles';
+const PANEL_ID      = 'anyllm-highlights-panel';
+const STYLE_ID      = 'anyllm-highlights-styles';
 const Z_INDEX       = '2147483636';
 
 const COLOR_MAP = {
@@ -27,7 +27,7 @@ const COLOR_MAP = {
 
 function buildStyles() {
   return `
-/* ── LM-Source Highlights Panel ── */
+/* ── AnyLLM Highlights Panel ── */
 
 #${PANEL_ID} {
   position: fixed;
@@ -49,12 +49,12 @@ function buildStyles() {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
-#${PANEL_ID}.lms-hl-open {
+#${PANEL_ID}.anyllm-hl-open {
   transform: translateX(0);
 }
 
 /* Header */
-.lms-hl-header {
+.anyllm-hl-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -63,7 +63,7 @@ function buildStyles() {
   border-bottom: 1px solid rgba(167, 139, 250, 0.18);
   flex-shrink: 0;
 }
-.lms-hl-title {
+.anyllm-hl-title {
   font-size: 14px;
   font-weight: 700;
   color: #c4b5fd;
@@ -72,7 +72,7 @@ function buildStyles() {
   gap: 8px;
   letter-spacing: 0.03em;
 }
-.lms-hl-close-btn {
+.anyllm-hl-close-btn {
   background: none;
   border: none;
   color: #94a3b8;
@@ -82,10 +82,10 @@ function buildStyles() {
   font-size: 14px;
   transition: background 0.15s, color 0.15s;
 }
-.lms-hl-close-btn:hover { background: rgba(167,139,250,0.12); color: #c4b5fd; }
+.anyllm-hl-close-btn:hover { background: rgba(167,139,250,0.12); color: #c4b5fd; }
 
 /* Body */
-.lms-hl-body {
+.anyllm-hl-body {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
@@ -93,20 +93,20 @@ function buildStyles() {
   flex-direction: column;
   gap: 20px;
 }
-.lms-hl-body::-webkit-scrollbar { width: 6px; }
-.lms-hl-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-.lms-hl-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-.lms-hl-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+.anyllm-hl-body::-webkit-scrollbar { width: 6px; }
+.anyllm-hl-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.anyllm-hl-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.anyllm-hl-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
 /* Empty state */
-.lms-hl-empty {
+.anyllm-hl-empty {
   text-align: center;
   padding: 40px 20px;
   color: #64748b;
 }
 
 /* Color Group */
-.lms-hl-group-title {
+.anyllm-hl-group-title {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -117,14 +117,14 @@ function buildStyles() {
   align-items: center;
   gap: 6px;
 }
-.lms-hl-group-swatch {
+.anyllm-hl-group-swatch {
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
 
 /* Highlight Card */
-.lms-hl-card {
+.anyllm-hl-card {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
@@ -133,11 +133,11 @@ function buildStyles() {
   position: relative;
   transition: border-color 0.15s, transform 0.15s;
 }
-.lms-hl-card:hover {
+.anyllm-hl-card:hover {
   transform: translateY(-1px);
   border-color: rgba(255, 255, 255, 0.15);
 }
-.lms-hl-text {
+.anyllm-hl-text {
   font-size: 13px;
   color: #e2e8f0;
   word-break: break-word;
@@ -146,7 +146,7 @@ function buildStyles() {
 }
 
 /* Card Actions */
-.lms-hl-actions {
+.anyllm-hl-actions {
   display: flex;
   justify-content: flex-end;
   gap: 6px;
@@ -154,7 +154,7 @@ function buildStyles() {
   border-top: 1px solid rgba(255,255,255,0.06);
   padding-top: 8px;
 }
-.lms-hl-action-btn {
+.anyllm-hl-action-btn {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.05);
   color: #cbd5e1;
@@ -167,11 +167,11 @@ function buildStyles() {
   align-items: center;
   gap: 4px;
 }
-.lms-hl-action-btn:hover {
+.anyllm-hl-action-btn:hover {
   background: rgba(255,255,255,0.1);
   color: #fff;
 }
-.lms-hl-action-btn.delete:hover {
+.anyllm-hl-action-btn.delete:hover {
   background: rgba(248,113,113,0.15);
   color: #fca5a5;
   border-color: rgba(248,113,113,0.2);
@@ -196,18 +196,18 @@ function _createPanel() {
 
   const panel = document.createElement('div');
   panel.id = PANEL_ID;
-  panel.dataset.lmsInjected = '1';
+  panel.dataset.anyllmInjected = '1';
   
   // Header
   const header = document.createElement('div');
-  header.className = 'lms-hl-header';
+  header.className = 'anyllm-hl-header';
   
   const title = document.createElement('div');
-  title.className = 'lms-hl-title';
+  title.className = 'anyllm-hl-title';
   title.innerHTML = '<span>🖍 Highlights</span>';
   
   const closeBtn = document.createElement('button');
-  closeBtn.className = 'lms-hl-close-btn';
+  closeBtn.className = 'anyllm-hl-close-btn';
   closeBtn.innerHTML = '✕';
   closeBtn.title = 'Close panel';
   closeBtn.addEventListener('click', close);
@@ -216,7 +216,7 @@ function _createPanel() {
   
   // Body
   const body = document.createElement('div');
-  body.className = 'lms-hl-body';
+  body.className = 'anyllm-hl-body';
   body.id = `${PANEL_ID}-body`;
   
   panel.append(header, body);
@@ -229,33 +229,33 @@ function _renderGroup(color, highlights) {
   if (!highlights || highlights.length === 0) return null;
 
   const group = document.createElement('div');
-  group.className = 'lms-hl-group';
+  group.className = 'anyllm-hl-group';
   group.dataset.color = color;
 
   const conf = COLOR_MAP[color] || COLOR_MAP.yellow;
 
   const title = document.createElement('div');
-  title.className = 'lms-hl-group-title';
-  title.innerHTML = `<div class="lms-hl-group-swatch" style="background: ${conf.border}"></div>${conf.label} (${highlights.length})`;
+  title.className = 'anyllm-hl-group-title';
+  title.innerHTML = `<div class="anyllm-hl-group-swatch" style="background: ${conf.border}"></div>${conf.label} (${highlights.length})`;
   
   group.appendChild(title);
 
   for (const hl of highlights) {
     const card = document.createElement('div');
-    card.className = 'lms-hl-card';
+    card.className = 'anyllm-hl-card';
     card.dataset.id = hl.id;
     card.style.borderLeft = `3px solid ${conf.border}`;
     card.style.background = `linear-gradient(90deg, ${conf.bg} 0%, rgba(15, 23, 42, 0.6) 100%)`;
 
     const text = document.createElement('div');
-    text.className = 'lms-hl-text';
+    text.className = 'anyllm-hl-text';
     text.textContent = hl.text;
 
     const actions = document.createElement('div');
-    actions.className = 'lms-hl-actions';
+    actions.className = 'anyllm-hl-actions';
 
     const copyBtn = document.createElement('button');
-    copyBtn.className = 'lms-hl-action-btn';
+    copyBtn.className = 'anyllm-hl-action-btn';
     copyBtn.innerHTML = '📋 Copy';
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(hl.text);
@@ -264,7 +264,7 @@ function _renderGroup(color, highlights) {
     });
 
     const delBtn = document.createElement('button');
-    delBtn.className = 'lms-hl-action-btn delete';
+    delBtn.className = 'anyllm-hl-action-btn delete';
     delBtn.innerHTML = '✕ Remove';
     delBtn.addEventListener('click', () => {
       if (_options && _options.onRemove) _options.onRemove(hl.id);
@@ -284,7 +284,7 @@ function _renderContent(highlights) {
   body.innerHTML = '';
 
   if (!highlights || highlights.length === 0) {
-    body.innerHTML = `<div class="lms-hl-empty">
+    body.innerHTML = `<div class="anyllm-hl-empty">
       <div style="font-size: 24px; margin-bottom: 10px;">🖍</div>
       No highlights yet.<br>Select text in any message to highlight it.
     </div>`;
@@ -314,18 +314,18 @@ function render(highlights, options = {}) {
 
 function open() {
   const panel = document.getElementById(PANEL_ID);
-  if (panel) panel.classList.add('lms-hl-open');
+  if (panel) panel.classList.add('anyllm-hl-open');
 }
 
 function close() {
   const panel = document.getElementById(PANEL_ID);
-  if (panel) panel.classList.remove('lms-hl-open');
+  if (panel) panel.classList.remove('anyllm-hl-open');
 }
 
 function toggle() {
   const panel = document.getElementById(PANEL_ID);
-  if (panel) panel.classList.toggle('lms-hl-open');
-  else console.warn('[LM-Source] HighlightsPanel not rendered yet.');
+  if (panel) panel.classList.toggle('anyllm-hl-open');
+  else console.warn('[AnyLLM] HighlightsPanel not rendered yet.');
 }
 
 function destroy() {

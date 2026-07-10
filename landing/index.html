@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnyLLM — Git for LLM Context</title>
+  <meta name="description" content="AnyLLM keeps decisions, code, and next steps moving between AI tools. A browser extension between Claude.ai, ChatGPT and Gemini — and a CLI between Claude Code, Codex and Agy.">
+  <meta name="keywords" content="AnyLLM, LLM context, AI session handoff, browser extension, CLI, Claude, ChatGPT, Gemini, Claude Code, Codex, Agy, Antigravity, developer tools">
+  <meta name="author" content="AnyLLM">
+  <link rel="icon" type="image/png" href="./logo.png">
+  <link rel="shortcut icon" type="image/png" href="./logo.png">
+  <link rel="apple-touch-icon" href="./logo.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#hero" class="brand" aria-label="AnyLLM home">
+        <img src="./logo.png" alt="" class="brand-mark">
+        <span>AnyLLM</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#versions">Two Versions</a></li>
+        <li><a href="#extension">Extension</a></li>
+        <li><a href="#cli">CLI</a></li>
+        <li><a href="#format">Format</a></li>
+      </ul>
+      <a href="https://github.com/rajarshidattapy/anycapsule" class="nav-cta" target="_blank" rel="noreferrer">Star on GitHub</a>
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">Menu</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="container hero-layout">
+        <div class="hero-copy">
+          <div class="hero-kicker">Open source · Local-first · Two surfaces, one format</div>
+          <h1>Git for LLM context.</h1>
+          <p class="hero-subtitle">
+            Every AI conversation ends somewhere — quota runs out, the tab closes, you switch tools. <strong>AnyLLM</strong> snapshots what happened and hands it to whatever comes next.
+          </p>
+          <p class="hero-subtitle">
+            A <strong>browser extension</strong> carries context between Claude.ai, ChatGPT and Gemini. A <strong>CLI</strong> carries it between Claude Code, Codex and Agy. Same idea, two front doors.
+          </p>
+          <div class="hero-actions">
+            <a href="#extension" class="btn-primary">Browser Extension</a>
+            <a href="#cli" class="btn-secondary">CLI Tool</a>
+          </div>
+        </div>
+
+        <div class="hero-panel" aria-label="AnyLLM preview">
+          <div class="logo-plate">
+            <img src="./logo.png" alt="AnyLLM logo">
+          </div>
+          <div class="terminal">
+            <div class="terminal-header">
+              <span>AnyLLM</span>
+              <span>two versions</span>
+            </div>
+            <div class="terminal-body">
+              <p class="muted"># in the browser — Claude.ai, ChatGPT, Gemini</p>
+              <p><span>›</span> Extract Context → Pinboard → Handoff</p>
+              <p>&nbsp;</p>
+              <p class="muted"># in the terminal — Claude Code, Codex, Agy</p>
+              <p><span>$</span> pip install anyllm-ctx</p>
+              <p><span>$</span> anyllm install</p>
+              <p><span>&gt;</span> /anyllm-pack</p>
+              <p class="muted">packed → .anyllm/current.md (58 turns)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="section problem-section" id="problem">
+      <div class="container">
+        <div class="section-intro">
+          <p class="section-label">The Problem</p>
+          <h2>The 10-minute tax you pay every time.</h2>
+          <p>You build up context across dozens of AI turns — in a chat tab or a coding agent. Then one of these happens, and the next tool needs the whole thing explained again.</p>
+        </div>
+        <div class="card-grid four">
+          <article class="card">
+            <span class="card-index">01</span>
+            <h3>Credits Exhausted</h3>
+            <p>API quota or subscription caps hit — in the browser or the terminal. You switch tools, but the built-up context is gone.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">02</span>
+            <h3>Context Window Full</h3>
+            <p>The model starts forgetting earlier decisions. A fresh session — or a fresh tab — doesn't know what happened.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">03</span>
+            <h3>Tool Switch</h3>
+            <p>ChatGPT to Claude. Claude Code to Codex. Every switch means re-explaining decisions and failed attempts from scratch.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">04</span>
+            <h3>New Session Tomorrow</h3>
+            <p>You pick up work the next day. Yesterday's chat or coding session is gone — you're re-explaining the project to yourself through a model.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TWO VERSIONS -->
+    <section class="section versions-section" id="versions">
+      <div class="container">
+        <div class="section-intro centered">
+          <p class="section-label">One Format, Two Surfaces</p>
+          <h2>Same brief. Different front door.</h2>
+          <p>Pick the surface that matches where the conversation actually lives. The context underneath is the same idea either way.</p>
+        </div>
+        <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+          <article class="card" style="min-height: 320px;">
+            <span class="card-index">EXT</span>
+            <h3>AnyLLM for Chat</h3>
+            <p>A browser extension that lives inside the conversation itself. Extract, pin, highlight, and hand off — without leaving Claude.ai, ChatGPT, or Gemini.</p>
+            <ul class="plain-list" style="margin-top: 18px;">
+              <li><strong>Extract Context</strong> — decisions, next steps, code, topics.</li>
+              <li><strong>Pinboard &amp; Highlights</strong> — keep the important parts in view.</li>
+              <li><strong>Context Handoff</strong> — send a briefing to another platform's tab.</li>
+            </ul>
+            <p class="muted" style="margin-top: 20px; font-size: 0.85rem;">Works with: Claude.ai · ChatGPT · Gemini</p>
+            <div class="hero-actions" style="margin-top: 20px;">
+              <a href="#extension" class="btn-secondary">See the extension</a>
+            </div>
+          </article>
+          <article class="card" style="min-height: 320px;">
+            <span class="card-index">CLI</span>
+            <h3>AnyLLM for Code</h3>
+            <p>A Python CLI that snapshots a dying coding session and primes the next model in 30 seconds — as a slash command inside your agent.</p>
+            <ul class="plain-list" style="margin-top: 18px;">
+              <li><strong>Rolling Project Memory</strong> — decisions accumulate across sessions.</li>
+              <li><strong>Confidence-Aware</strong> — CONFIRMED, STALE, or ORPHANED, tracked automatically.</li>
+              <li><strong>Zero-token in Claude Code</strong> — slash commands run in the shell, no AI call.</li>
+            </ul>
+            <p class="muted" style="margin-top: 20px; font-size: 0.85rem;">Works with: Claude Code · Codex · Agy (+ Kiro, Kilocode, OpenCode, Cursor)</p>
+            <div class="hero-actions" style="margin-top: 20px;">
+              <a href="#cli" class="btn-secondary">See the CLI</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXTENSION -->
+    <section class="section extension-section" id="extension">
+      <div class="container">
+        <div class="section-intro">
+          <p class="section-label">AnyLLM for Chat</p>
+          <h2>The browser extension.</h2>
+          <p>Works inside the tab you're already in. Detects the platform, lights up its buttons, and keeps everything — pins, highlights, deletions — local to your machine.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <span>1</span>
+            <h3>Open</h3>
+            <code>auto-detect</code>
+            <p>Visit Claude.ai, ChatGPT, or Gemini. AnyLLM detects the platform and enables its feature buttons.</p>
+          </article>
+          <article class="step">
+            <span>2</span>
+            <h3>Extract</h3>
+            <code>Extract Context</code>
+            <p>Scans the thread for decisions, next steps, code blocks, and topics — condensed into one structured summary.</p>
+          </article>
+          <article class="step">
+            <span>3</span>
+            <h3>Hand off</h3>
+            <code>Context Handoff</code>
+            <p>Copy to clipboard, save to the pinboard, or send it straight into a new tab on another platform.</p>
+          </article>
+        </div>
+
+        <div class="card-grid three" style="margin-top: 16px;">
+          <article class="card">
+            <span class="card-index">01</span>
+            <h3>Extract Context</h3>
+            <p>Scans every message for decisions, next steps, code blocks, and topics, then condenses the recent exchange into a structured summary.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">02</span>
+            <h3>Context Handoff</h3>
+            <p>Packages the extraction into a ready-to-paste briefing. Copy to clipboard, save it to the pinboard, or open a new tab and inject it directly.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">03</span>
+            <h3>Pinboard</h3>
+            <p>Pin any message from the conversation, reorder by drag-and-drop, and revisit it later — persisted per conversation, not just per tab.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">04</span>
+            <h3>Highlights</h3>
+            <p>Select text and mark it yellow, green, or red. Highlights are anchored to the DOM and survive page reloads.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">05</span>
+            <h3>Soft Delete &amp; Bulk Mode</h3>
+            <p>Hide clutter from view with a local-only soft delete. Toggle visibility any time, or switch to bulk mode and clear several messages at once.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">06</span>
+            <h3>Local-First Storage</h3>
+            <p>Everything — pins, highlights, deletions — lives in <code>chrome.storage</code> on your machine. Nothing is sent to a server.</p>
+          </article>
+        </div>
+
+        <div class="integrations-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 28px;">
+          <div class="integration-card highlight">
+            <div class="integration-head">
+              <span class="int-name">Claude.ai</span>
+              <span class="int-badge zero">supported</span>
+            </div>
+            <p>Adapter reads Claude's message DOM to extract, pin, and highlight in place.</p>
+          </div>
+          <div class="integration-card highlight">
+            <div class="integration-head">
+              <span class="int-name">ChatGPT</span>
+              <span class="int-badge zero">supported</span>
+            </div>
+            <p>Works on both <code>chat.openai.com</code> and <code>chatgpt.com</code>.</p>
+          </div>
+          <div class="integration-card highlight">
+            <div class="integration-head">
+              <span class="int-name">Google Gemini</span>
+              <span class="int-badge zero">supported</span>
+            </div>
+            <p>Same popup, same feature set — the adapter layer normalises each platform's DOM.</p>
+          </div>
+        </div>
+
+        <div class="integration-note" style="margin-top: 16px;">
+          <strong>Try it locally</strong> — Manifest V3, not yet on the Chrome Web Store:
+          <span class="cmd-pills">
+            <code>npm install</code>
+            <code>npm run build</code>
+            <code>chrome://extensions → Load unpacked → dist/</code>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLI -->
+    <section class="section" id="cli">
+      <div class="container">
+        <div class="section-intro">
+          <p class="section-label">AnyLLM for Code</p>
+          <h2>The CLI tool.</h2>
+          <p>Install once, and <code>/anyllm-pack</code> works inside every AI coding tool you use — without leaving your session.</p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <span>1</span>
+            <h3>Install</h3>
+            <code>anyllm install</code>
+            <p>Detects which AI coding CLIs you have installed and wires up slash commands in all of them at once.</p>
+          </article>
+          <article class="step">
+            <span>2</span>
+            <h3>Pack</h3>
+            <code>/anyllm-pack</code>
+            <p>Distills your session into a structured snapshot with decisions, failed paths, and what's next. Merges into rolling project memory.</p>
+          </article>
+          <article class="step">
+            <span>3</span>
+            <h3>Prime</h3>
+            <code>/anyllm-prime</code>
+            <p>Copies a briefing to the clipboard. Paste it into any model — ChatGPT, Claude, Gemini — and continue without re-explaining.</p>
+          </article>
+        </div>
+        <div class="pipeline">
+          <span>Ingestor</span>
+          <span>Distiller</span>
+          <span>Merger</span>
+          <span>Composer</span>
+          <span>Adapter</span>
+        </div>
+
+        <div class="section-intro" style="margin-top: 56px;">
+          <p class="section-label">Integrations</p>
+          <h2 style="font-size: clamp(2rem, 4vw, 3.4rem);">Works inside 7 AI coding tools.</h2>
+          <p>Built around three core agents — <code>Claude Code</code>, <code>Codex</code>, <code>Agy</code> — plus four more <code>anyllm install</code> already knows how to wire up.</p>
+        </div>
+
+        <div class="integrations-grid">
+          <div class="integration-card highlight">
+            <div class="integration-head">
+              <span class="int-name">Claude Code</span>
+              <span class="int-badge zero">zero tokens</span>
+            </div>
+            <code>/anyllm-pack</code>
+            <p>Slash commands run directly in the shell — no AI call, no tokens consumed. The fastest integration.</p>
+          </div>
+          <div class="integration-card highlight">
+            <div class="integration-head">
+              <span class="int-name">Codex</span>
+              <span class="int-badge">AI-triggered</span>
+            </div>
+            <code>$anyllm-pack</code>
+            <p>Uses Codex's <code>$command</code> prefix. Skills are installed globally in <code>~/.codex/prompts/</code>.</p>
+          </div>
+          <div class="integration-card highlight">
+            <div class="integration-head">
+              <span class="int-name">Antigravity / Agy</span>
+              <span class="int-badge">skill</span>
+            </div>
+            <code>anyllm-pack</code>
+            <p>Skills are installed in <code>~/.gemini/config/skills/</code>. Type the name as a plain message — no slash prefix.</p>
+          </div>
+          <div class="integration-card">
+            <div class="integration-head">
+              <span class="int-name">Kiro</span>
+              <span class="int-badge">steering</span>
+            </div>
+            <code>/anyllm-pack</code>
+            <p>Installed as steering documents in <code>~/.kiro/steering/</code>. Kiro reads them as persistent agent instructions.</p>
+          </div>
+          <div class="integration-card">
+            <div class="integration-head">
+              <span class="int-name">Kilocode</span>
+              <span class="int-badge zero">zero tokens</span>
+            </div>
+            <code>/anyllm-pack</code>
+            <p>Claude Code-compatible format. Commands run directly in the shell — no tokens used.</p>
+          </div>
+          <div class="integration-card">
+            <div class="integration-head">
+              <span class="int-name">OpenCode</span>
+              <span class="int-badge">AI-triggered</span>
+            </div>
+            <code>/anyllm-pack</code>
+            <p>Installed in <code>~/.config/opencode/commands/</code> or project-local <code>.opencode/commands/</code>.</p>
+          </div>
+          <div class="integration-card">
+            <div class="integration-head">
+              <span class="int-name">Cursor</span>
+              <span class="int-badge">skill</span>
+            </div>
+            <code>/anyllm-pack</code>
+            <p>Installed as a skill directory in <code>~/.cursor/skills-cursor/</code>.</p>
+          </div>
+        </div>
+
+        <div class="integration-note">
+          <strong>All 8 commands</strong> are installed in each CLI:
+          <span class="cmd-pills">
+            <code>/anyllm-init</code>
+            <code>/anyllm-pack</code>
+            <code>/anyllm-repack</code>
+            <code>/anyllm-prime</code>
+            <code>/anyllm-push</code>
+            <code>/anyllm-status</code>
+            <code>/anyllm-log</code>
+            <code>/anyllm-diff</code>
+          </span>
+        </div>
+
+        <div class="card-grid three" style="margin-top: 56px;">
+          <article class="card">
+            <span class="card-index">A</span>
+            <h3>Rolling Project Memory</h3>
+            <p>Every <code>pack</code> merges into <code>current.md</code> — not overwrites it. Decisions from three sessions ago survive even if today's session never mentioned them.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">B</span>
+            <h3>Confidence-Aware Decisions</h3>
+            <p>Each decision is classified CONFIRMED, STALE, or ORPHANED across sessions. The receiving model knows exactly what to trust and what to verify.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">C</span>
+            <h3>Cross-Tool Portability</h3>
+            <p>Move context from Claude Code to Codex to Agy — same briefing, same project memory, no ecosystem lock-in.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">D</span>
+            <h3>Delta Repacking</h3>
+            <p><code>/anyllm-repack</code> ingests only turns since the last pack. Use it mid-session to update context without reprocessing the full history.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">E</span>
+            <h3>Failed Approaches — Forever</h3>
+            <p>Failed paths accumulate across all sessions. Every future model knows what was tried and failed — so it doesn't try again.</p>
+          </article>
+          <article class="card">
+            <span class="card-index">F</span>
+            <h3>Local-First and Private</h3>
+            <p>No cloud, no database, no telemetry. Transcripts and snapshots are plain files on disk. Commit <code>.anyllm/</code> to your repo.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARISON -->
+    <section class="section comparison-section" id="comparison">
+      <div class="container">
+        <div class="section-intro centered">
+          <p class="section-label">Comparison</p>
+          <h2>Not a memory SDK. A handoff tool.</h2>
+          <p>The market is full of memory systems for app developers. AnyLLM is for developers actively moving a task between AI tools — chat or code.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Audience</th>
+                <th>Cross-tool</th>
+                <th>Slash commands</th>
+                <th>Rolling memory</th>
+                <th>Open source</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>mem0</td><td>App developers</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+              <tr><td>Letta / MemGPT</td><td>App developers</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+              <tr><td>Pieces</td><td>End-user devs</td><td>Some</td><td>No</td><td>No</td><td>No</td></tr>
+              <tr><td>Claude MEMORY.md</td><td>Claude only</td><td>No</td><td>No</td><td>Manual</td><td>N/A</td></tr>
+              <tr><td>Cursor Rules</td><td>Cursor only</td><td>No</td><td>No</td><td>Manual</td><td>N/A</td></tr>
+              <tr class="highlight-row"><td>AnyLLM CLI</td><td>End-user devs</td><td>7 tools</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+              <tr class="highlight-row"><td>AnyLLM Extension</td><td>End-user devs</td><td>3 platforms</td><td>N/A</td><td>Local pins/highlights</td><td>Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMAT -->
+    <section class="section" id="format">
+      <div class="container snapshot-layout">
+        <div>
+          <p class="section-label">The .anyllm Format</p>
+          <h2>A format designed to become boring infrastructure.</h2>
+          <p class="lead">Versioned markdown keeps context inspectable, diff-friendly, and easy for other tools to build on. This powers the CLI's rolling memory — the extension keeps its own local pins and highlights in <code>chrome.storage</code>.</p>
+          <ul class="plain-list">
+            <li><strong>Versioned</strong> so the format can evolve without breaking old snapshots.</li>
+            <li><strong>Merged</strong> so decisions accumulate across sessions — never silently dropped.</li>
+            <li><strong>Confidence-aware</strong> so uncertain claims are surfaced at handoff time.</li>
+            <li><strong>Hand-editable</strong> because plain markdown is still the right default.</li>
+            <li><strong>Committable</strong> — <code>.anyllm/</code> belongs in your repo alongside the code.</li>
+          </ul>
+        </div>
+        <div class="snapshot-code">
+          <div class="code-title">.anyllm/current.md</div>
+          <pre>---
+anyllm_version: 0.1
+project: myapp
+merged_from: [session-a, session-b]
+confidence_report:
+  confirmed: 4
+  stale: 1
+---
+
+## Task
+Build a multi-agent orchestration layer.
+
+## Decisions
+- [CONFIRMED] Use SQLite for state — auth/store.py
+- [CONFIRMED] Event sourcing over CRUD — core/events.py
+- [NEW] Retry budget capped per-tool, not global
+
+## Failed Approaches
+- Redis for state. Overkill. Do not redo.
+- Polling loop for tool results. Use callbacks.
+
+## Stale / Needs Verification
+- [STALE] Tool registry auto-discovers plugins
+
+## Next Step
+Implement persistence layer in store.py.</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section" id="get-started">
+      <div class="container">
+        <div class="cta-block">
+          <img src="./logo.png" alt="" class="cta-logo">
+          <h2>Stop re-explaining. Start continuing.</h2>
+          <p>Two surfaces, one format. Add the extension to your browser, install the CLI in your terminal, or both.</p>
+          <div class="hero-actions">
+            <a href="#extension" class="btn-primary">Get the Extension</a>
+            <a href="#cli" class="btn-secondary">Get the CLI</a>
+          </div>
+          <button class="install-command" id="install-block" onclick="copyInstall()" type="button">
+            <span>$</span>
+            <code>pip install anyllm-ctx</code>
+            <small>click to copy</small>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a href="#hero" class="brand small">
+        <img src="./logo.png" alt="" class="brand-mark">
+        <span>AnyLLM</span>
+      </a>
+      <p>v1.1.0 · Git for LLM context. Browser extension + CLI.</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/rajarshidattapy/anycapsule" target="_blank" rel="noreferrer">GitHub</a></li>
+        <li><a href="#extension">Extension</a></li>
+        <li><a href="#cli">CLI</a></li>
+        <li><a href="#format">Format Spec</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    const navbar = document.getElementById('navbar');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', (event) => {
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        navLinks.classList.remove('open');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    mobileMenuBtn.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('open');
+      mobileMenuBtn.setAttribute('aria-expanded', String(open));
+      mobileMenuBtn.textContent = open ? 'Close' : 'Menu';
+    });
+
+    function copyInstall() {
+      const block = document.getElementById('install-block');
+      const hint = block.querySelector('small');
+      navigator.clipboard.writeText('pip install anyllm-ctx').then(() => {
+        hint.textContent = 'copied';
+        window.setTimeout(() => { hint.textContent = 'click to copy'; }, 1600);
+      });
+    }
+  </script>
+</body>
+</html>

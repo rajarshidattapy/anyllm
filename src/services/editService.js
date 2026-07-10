@@ -1,5 +1,5 @@
 // src/services/editService.js
-// LM-Source — Edit Service (P2.5)
+// AnyLLM — Edit Service (P2.5)
 //
 // Allows users to locally edit any message element (user OR AI) in the DOM.
 // Edits are purely local — no LLM session data is mutated.
@@ -9,7 +9,7 @@
 //     id:             string   — unique record ID
 //     platform:       string
 //     conversationId: string
-//     messageId:      string   — matches data-lms-msg-id attribute
+//     messageId:      string   — matches data-anyllm-msg-id attribute
 //     originalText:   string   — raw innerText at the moment of first edit
 //     editedText:     string   — the user-saved version
 //     editedAt:       number   — Unix ms of last save
@@ -38,9 +38,9 @@ import {
 const MAX_HISTORY = 10;
 
 // CSS class stamped on elements that have a local edit applied
-const EDITED_CLASS   = 'lms-edited-msg';
-const EDITING_CLASS  = 'lms-editing-active';
-const STYLE_ID       = 'lms-edit-styles';
+const EDITED_CLASS   = 'anyllm-edited-msg';
+const EDITING_CLASS  = 'anyllm-editing-active';
+const STYLE_ID       = 'anyllm-edit-styles';
 
 // ── Injected styles ───────────────────────────────────────────────────────────
 
@@ -49,10 +49,10 @@ function ensureStyles() {
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = `
-/* LM-Source — edit service injected styles */
+/* AnyLLM — edit service injected styles */
 
 /* Edited-message indicator chip */
-.lms-edit-badge {
+.anyllm-edit-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -70,10 +70,10 @@ function ensureStyles() {
   transition: background 0.15s;
   user-select: none;
 }
-.lms-edit-badge:hover {
+.anyllm-edit-badge:hover {
   background: rgba(99, 102, 241, 0.18);
 }
-.lms-edit-badge .lms-revert-icon {
+.anyllm-edit-badge .anyllm-revert-icon {
   font-size: 11px;
   opacity: 0.7;
 }
@@ -86,7 +86,7 @@ function ensureStyles() {
 }
 
 /* Inline edit widget overlay */
-.lms-edit-overlay {
+.anyllm-edit-overlay {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@ function ensureStyles() {
   z-index: 10;
 }
 
-.lms-edit-textarea {
+.anyllm-edit-textarea {
   width: 100%;
   min-height: 80px;
   max-height: 60vh;
@@ -113,19 +113,19 @@ function ensureStyles() {
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
-.lms-edit-textarea:focus {
+.anyllm-edit-textarea:focus {
   border-color: rgba(99, 102, 241, 0.75);
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
 }
 
-.lms-edit-toolbar {
+.anyllm-edit-toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.lms-edit-btn {
+.anyllm-edit-btn {
   padding: 6px 14px;
   border-radius: 7px;
   border: none;
@@ -134,32 +134,32 @@ function ensureStyles() {
   cursor: pointer;
   transition: all 0.15s;
 }
-.lms-edit-btn.save {
+.anyllm-edit-btn.save {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: #fff;
 }
-.lms-edit-btn.save:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); transform: translateY(-1px); }
-.lms-edit-btn.cancel {
+.anyllm-edit-btn.save:hover { background: linear-gradient(135deg, #4f46e5, #7c3aed); transform: translateY(-1px); }
+.anyllm-edit-btn.cancel {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   color: #94a3b8;
 }
-.lms-edit-btn.cancel:hover { background: rgba(255,255,255,0.1); }
-.lms-edit-btn.revert {
+.anyllm-edit-btn.cancel:hover { background: rgba(255,255,255,0.1); }
+.anyllm-edit-btn.revert {
   background: rgba(239,68,68,0.08);
   border: 1px solid rgba(239,68,68,0.2);
   color: #f87171;
 }
-.lms-edit-btn.revert:hover { background: rgba(239,68,68,0.14); }
+.anyllm-edit-btn.revert:hover { background: rgba(239,68,68,0.14); }
 
-.lms-edit-charcount {
+.anyllm-edit-charcount {
   margin-left: auto;
   font-size: 10.5px;
   color: #4b5563;
 }
 
 /* History dropdown */
-.lms-edit-history-btn {
+.anyllm-edit-history-btn {
   background: rgba(99,102,241,0.08);
   border: 1px solid rgba(99,102,241,0.2);
   border-radius: 7px;
@@ -170,9 +170,9 @@ function ensureStyles() {
   padding: 5px 10px;
   transition: background 0.15s;
 }
-.lms-edit-history-btn:hover { background: rgba(99,102,241,0.15); }
+.anyllm-edit-history-btn:hover { background: rgba(99,102,241,0.15); }
 
-.lms-edit-history-list {
+.anyllm-edit-history-list {
   background: rgba(15,17,27,0.97);
   border: 1px solid rgba(99,102,241,0.22);
   border-radius: 8px;
@@ -180,7 +180,7 @@ function ensureStyles() {
   max-height: 200px;
   overflow-y: auto;
 }
-.lms-edit-history-item {
+.anyllm-edit-history-item {
   padding: 6px 8px;
   border-radius: 5px;
   font-size: 11.5px;
@@ -191,14 +191,14 @@ function ensureStyles() {
   gap: 8px;
   transition: background 0.12s;
 }
-.lms-edit-history-item:hover { background: rgba(99,102,241,0.1); color: #e2e8f0; }
-.lms-edit-history-ts {
+.anyllm-edit-history-item:hover { background: rgba(99,102,241,0.1); color: #e2e8f0; }
+.anyllm-edit-history-ts {
   font-size: 10px;
   color: #4b5563;
   white-space: nowrap;
   flex-shrink: 0;
 }
-.lms-edit-history-preview {
+.anyllm-edit-history-preview {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -253,9 +253,9 @@ function _getContentNode(el) {
  */
 function _getDisplayText(el) {
   const node = _getContentNode(el);
-  // Clone to strip injected LM-Source elements before reading innerText
+  // Clone to strip injected AnyLLM elements before reading innerText
   const clone = node.cloneNode(true);
-  clone.querySelectorAll('.lms-edit-badge, .lms-edit-overlay, [data-lms-injected]').forEach(n => n.remove());
+  clone.querySelectorAll('.anyllm-edit-badge, .anyllm-edit-overlay, [data-anyllm-injected]').forEach(n => n.remove());
   return (clone.innerText || clone.textContent || '').trim();
 }
 
@@ -277,13 +277,13 @@ function _fmtDate(ts) {
  */
 function _applyBadge(el, record, onRevertClick, onHistoryClick) {
   // Remove existing badge
-  el.querySelector('.lms-edit-badge')?.remove();
+  el.querySelector('.anyllm-edit-badge')?.remove();
 
   const badge = document.createElement('span');
-  badge.className = 'lms-edit-badge';
-  badge.dataset.lmsInjected = '1';
+  badge.className = 'anyllm-edit-badge';
+  badge.dataset.anyllmInjected = '1';
   badge.setAttribute('title', `Edited ${_fmtDate(record.editedAt)} — click for options`);
-  badge.innerHTML = `<span class="lms-revert-icon">✎</span> Edited ${_fmtDate(record.editedAt)}`;
+  badge.innerHTML = `<span class="anyllm-revert-icon">✎</span> Edited ${_fmtDate(record.editedAt)}`;
 
   badge.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -299,11 +299,11 @@ function _applyBadge(el, record, onRevertClick, onHistoryClick) {
  */
 function _showBadgeMenu(badge, record, onRevertClick, onHistoryClick) {
   // Remove any existing menu
-  document.querySelectorAll('.lms-badge-menu').forEach(m => m.remove());
+  document.querySelectorAll('.anyllm-badge-menu').forEach(m => m.remove());
 
   const menu = document.createElement('div');
-  menu.className = 'lms-badge-menu';
-  menu.dataset.lmsInjected = '1';
+  menu.className = 'anyllm-badge-menu';
+  menu.dataset.anyllmInjected = '1';
   Object.assign(menu.style, {
     position:   'absolute',
     zIndex:     '2147483632',
@@ -369,23 +369,23 @@ function _showEditor(el, messageId, platform, conversationId, initialText, origi
   ensureStyles();
 
   // If an editor is already open on this element, skip
-  if (el.querySelector('.lms-edit-overlay')) return;
+  if (el.querySelector('.anyllm-edit-overlay')) return;
 
   el.classList.add(EDITING_CLASS);
 
   const node    = _getContentNode(el);
   const overlay = document.createElement('div');
-  overlay.className         = 'lms-edit-overlay';
-  overlay.dataset.lmsInjected = '1';
+  overlay.className         = 'anyllm-edit-overlay';
+  overlay.dataset.anyllmInjected = '1';
 
   const textarea = document.createElement('textarea');
-  textarea.className = 'lms-edit-textarea';
+  textarea.className = 'anyllm-edit-textarea';
   textarea.value     = initialText;
   textarea.setAttribute('aria-label', 'Edit message text');
   textarea.setAttribute('spellcheck', 'true');
 
   const charCount = document.createElement('span');
-  charCount.className = 'lms-edit-charcount';
+  charCount.className = 'anyllm-edit-charcount';
   charCount.textContent = `${initialText.length} chars`;
   textarea.addEventListener('input', () => {
     charCount.textContent = `${textarea.value.length} chars`;
@@ -393,7 +393,7 @@ function _showEditor(el, messageId, platform, conversationId, initialText, origi
 
   // Toolbar row
   const toolbarRow = document.createElement('div');
-  toolbarRow.className = 'lms-edit-toolbar';
+  toolbarRow.className = 'anyllm-edit-toolbar';
 
   const saveBtn   = _makeEditBtn('✓ Save', 'save');
   const cancelBtn = _makeEditBtn('✕ Cancel', 'cancel');
@@ -424,7 +424,7 @@ function _showEditor(el, messageId, platform, conversationId, initialText, origi
   // History button (only if there are prior saves)
   if (history && history.length > 0) {
     const histBtn = document.createElement('button');
-    histBtn.className   = 'lms-edit-history-btn';
+    histBtn.className   = 'anyllm-edit-history-btn';
     histBtn.textContent = `🕓 History (${history.length})`;
     histBtn.addEventListener('click', () => _showHistoryDropdown(histBtn, history, (text) => {
       textarea.value = text;
@@ -457,7 +457,7 @@ function _showEditor(el, messageId, platform, conversationId, initialText, origi
 
 function _makeEditBtn(label, variant) {
   const btn = document.createElement('button');
-  btn.className = `lms-edit-btn ${variant}`;
+  btn.className = `anyllm-edit-btn ${variant}`;
   btn.textContent = label;
   return btn;
 }
@@ -474,11 +474,11 @@ function _destroyEditor(el, overlay) {
  * @param {Function}  onSelect   — (text: string) => void
  */
 function _showHistoryDropdown(anchor, history, onSelect) {
-  document.querySelectorAll('.lms-edit-history-list').forEach(l => l.remove());
+  document.querySelectorAll('.anyllm-edit-history-list').forEach(l => l.remove());
 
   const list = document.createElement('div');
-  list.className = 'lms-edit-history-list';
-  list.dataset.lmsInjected = '1';
+  list.className = 'anyllm-edit-history-list';
+  list.dataset.anyllmInjected = '1';
   Object.assign(list.style, {
     position:   'absolute',
     zIndex:     '2147483631',
@@ -486,10 +486,10 @@ function _showHistoryDropdown(anchor, history, onSelect) {
 
   [...history].reverse().forEach(entry => {
     const item = document.createElement('div');
-    item.className = 'lms-edit-history-item';
+    item.className = 'anyllm-edit-history-item';
     item.innerHTML = `
-      <span class="lms-edit-history-ts">${_fmtDate(entry.savedAt)}</span>
-      <span class="lms-edit-history-preview">${entry.text.slice(0, 80).replace(/</g, '&lt;')}</span>
+      <span class="anyllm-edit-history-ts">${_fmtDate(entry.savedAt)}</span>
+      <span class="anyllm-edit-history-preview">${entry.text.slice(0, 80).replace(/</g, '&lt;')}</span>
     `;
     item.addEventListener('click', () => { list.remove(); onSelect(entry.text); });
     list.appendChild(item);
@@ -533,12 +533,12 @@ async function saveEdit(messageId, newText, originalText, platform, conversation
       // Restore DOM
       if (el) {
         const node = _getContentNode(el);
-        node.querySelector('.lms-edit-badge')?.remove();
+        node.querySelector('.anyllm-edit-badge')?.remove();
         el.classList.remove(EDITED_CLASS);
         // Replace content with original (plain-text; markdown won't re-render)
-        const existingContent = node.querySelector('[data-lms-edited-text]');
+        const existingContent = node.querySelector('[data-anyllm-edited-text]');
         if (existingContent) {
-          existingContent.removeAttribute('data-lms-edited-text');
+          existingContent.removeAttribute('data-anyllm-edited-text');
           existingContent.textContent = record.originalText;
         }
       }
@@ -612,7 +612,7 @@ async function hasEdit(messageId, platform, conversationId) {
 /**
  * Apply the stored edited text to a message DOM element.
  * - Replaces the visible text content
- * - Stamps `.lms-edited-msg` class
+ * - Stamps `.anyllm-edited-msg` class
  * - Injects the "[Edited …]" badge
  *
  * @param {Element} el
@@ -627,11 +627,11 @@ function _applyEditToDOM(el, record) {
   const node = _getContentNode(el);
 
   // Find or create a text container we control
-  let textNode = node.querySelector('[data-lms-edited-text]');
+  let textNode = node.querySelector('[data-anyllm-edited-text]');
   if (!textNode) {
     // Wrap existing content in a span we can replace
     textNode = document.createElement('div');
-    textNode.dataset.lmsEditedText = '1';
+    textNode.dataset.anyllmEditedText = '1';
     // Move current child nodes into the wrapper
     while (node.firstChild && node.firstChild !== textNode) {
       textNode.appendChild(node.firstChild);
@@ -648,11 +648,11 @@ function _applyEditToDOM(el, record) {
     () => {
       // Revert
       revertEdit(record.messageId, record.platform, record.conversationId, el)
-        .then(() => console.log(`[LM-Source][EditService] Reverted ${record.messageId}`));
+        .then(() => console.log(`[AnyLLM][EditService] Reverted ${record.messageId}`));
     },
     () => {
       // Show history
-      const badge = el.querySelector('.lms-edit-badge');
+      const badge = el.querySelector('.anyllm-edit-badge');
       if (badge && record.history?.length) {
         _showHistoryDropdown(badge, record.history, (text) => {
           // Restore selected history version into editor
@@ -665,9 +665,9 @@ function _applyEditToDOM(el, record) {
 
 /**
  * Re-apply all stored edits for a conversation after a page load.
- * Must be called after the MutationObserver has stamped `data-lms-msg-id` attributes.
+ * Must be called after the MutationObserver has stamped `data-anyllm-msg-id` attributes.
  *
- * @param {import('../adapters/baseAdapter.js').PlatformAdapter} adapterRef
+ * @param {import('../adapters/adapter.js').PlatformAdapter} adapterRef
  * @param {string} platform
  * @param {string} conversationId
  * @returns {Promise<number>}  — count of edits re-applied
@@ -692,7 +692,7 @@ async function applyEditsToDOM(adapterRef, platform, conversationId) {
     }
   });
 
-  console.log(`[LM-Source][EditService] Re-applied ${count} edit(s) after page load`);
+  console.log(`[AnyLLM][EditService] Re-applied ${count} edit(s) after page load`);
   return count;
 }
 
@@ -724,10 +724,10 @@ async function openEditor(el, messageId, platform, conversationId) {
     history,
     async (newText) => {
       await saveEdit(messageId, newText, originalText, platform, conversationId, el);
-      console.log(`[LM-Source][EditService] Saved edit for ${messageId}`);
+      console.log(`[AnyLLM][EditService] Saved edit for ${messageId}`);
     },
     () => {
-      console.log(`[LM-Source][EditService] Edit cancelled for ${messageId}`);
+      console.log(`[AnyLLM][EditService] Edit cancelled for ${messageId}`);
     }
   );
 }

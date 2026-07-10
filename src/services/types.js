@@ -1,5 +1,5 @@
 // src/services/types.js
-// LM-Source — Shared JSDoc type definitions
+// AnyLLM — Shared JSDoc type definitions
 // Import with: import './types.js' or reference via @typedef in consuming files.
 // These are documentation-only; no runtime code is exported.
 

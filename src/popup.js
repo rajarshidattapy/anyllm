@@ -1,15 +1,15 @@
 // src/popup.js
-// LM-Source — Popup Script
+// AnyLLM — Popup Script
 //
 // Handles the extension popup UI:
 //   - Platform detection from the active tab URL
-//   - "Extract Context" button → sends LMS_EXTRACT_CONTEXT to content script
+//   - "Extract Context" button → sends ANYLLM_EXTRACT_CONTEXT to content script
 //   - "Pinboard" and "Context Handoff" buttons (scaffolded for P2.3 / P2.7)
 
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('[LM-Source] Popup script loaded.');
+  console.log('[AnyLLM] Popup script loaded.');
 
   // ── Elements ─────────────────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function setSupported(platformName, accentColor) {
     platformIndicator.textContent = `Platform: ${platformName}`;
     platformIndicator.style.color = accentColor;
-    statusText.textContent = 'LM-Source Ready ✓';
+    statusText.textContent = 'AnyLLM Ready ✓';
     enableButtons();
   }
 
@@ -84,13 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chrome.tabs.sendMessage(
       activeTabId,
-      { type: 'LMS_EXTRACT_CONTEXT' },
+      { type: 'ANYLLM_EXTRACT_CONTEXT' },
       (response) => {
         extractBtn.disabled = false;
         extractBtn.querySelector('span').textContent = 'Extract Context';
 
         if (chrome.runtime.lastError) {
-          console.warn('[LM-Source] Popup: sendMessage error:', chrome.runtime.lastError.message);
+          console.warn('[AnyLLM] Popup: sendMessage error:', chrome.runtime.lastError.message);
           showError('Could not reach content script. Reload the page and try again.');
           return;
         }
@@ -107,20 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   pinboardBtn.addEventListener('click', () => {
     if (activeTabId === null) return;
-    chrome.tabs.sendMessage(activeTabId, { type: 'LMS_OPEN_PINBOARD' });
+    chrome.tabs.sendMessage(activeTabId, { type: 'ANYLLM_OPEN_PINBOARD' });
     window.close();
   });
 
   highlightsBtn.addEventListener('click', () => {
     if (activeTabId === null) return;
-    chrome.tabs.sendMessage(activeTabId, { type: 'LMS_OPEN_HIGHLIGHTS' });
+    chrome.tabs.sendMessage(activeTabId, { type: 'ANYLLM_OPEN_HIGHLIGHTS' });
     window.close();
   });
 
   handoffBtn.addEventListener('click', () => {
     if (activeTabId === null) return;
     // Toggle the panel on the page (useful when panel is already rendered)
-    chrome.tabs.sendMessage(activeTabId, { type: 'LMS_TOGGLE_PANEL' });
+    chrome.tabs.sendMessage(activeTabId, { type: 'ANYLLM_TOGGLE_PANEL' });
     window.close();
   });
 
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeTabId === null) return;
     chrome.tabs.sendMessage(
       activeTabId,
-      { type: 'LMS_TOGGLE_DELETED' },
+      { type: 'ANYLLM_TOGGLE_DELETED' },
       (response) => {
         if (chrome.runtime.lastError || !response?.success) return;
         _showingDeleted = response.visible;
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeTabId === null) return;
     chrome.tabs.sendMessage(
       activeTabId,
-      { type: 'LMS_BULK_DELETE_MODE' },
+      { type: 'ANYLLM_BULK_DELETE_MODE' },
       (response) => {
         if (chrome.runtime.lastError || !response?.success) return;
         _bulkModeOn = response.mode === 'on';
@@ -169,11 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   function showError(msg) {
-    const existing = document.getElementById('lms-popup-error');
+    const existing = document.getElementById('anyllm-popup-error');
     if (existing) existing.remove();
 
     const err = document.createElement('p');
-    err.id = 'lms-popup-error';
+    err.id = 'anyllm-popup-error';
     err.style.cssText = [
       'color:#ef4444', 'font-size:11px', 'margin-top:8px',
       'padding:6px 10px', 'background:rgba(239,68,68,0.1)',

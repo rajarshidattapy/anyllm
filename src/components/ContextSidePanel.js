@@ -1,5 +1,5 @@
 // src/components/ContextSidePanel.js
-// LM-Source — Context Side Panel (P2.2)
+// AnyLLM — Context Side Panel (P2.2)
 //
 // Injects a collapsible side panel into the host LLM page (Claude / ChatGPT /
 // Gemini) to display the extracted context. Renders without any framework — pure
@@ -16,10 +16,10 @@
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const PANEL_ID        = 'lms-context-panel';
-const TOGGLE_BTN_ID   = 'lms-context-toggle-btn';
-const OVERLAY_ID      = 'lms-context-overlay';
-const STYLE_ID        = 'lms-context-styles';
+const PANEL_ID        = 'anyllm-context-panel';
+const TOGGLE_BTN_ID   = 'anyllm-context-toggle-btn';
+const OVERLAY_ID      = 'anyllm-context-overlay';
+const STYLE_ID        = 'anyllm-context-styles';
 
 const PANEL_WIDTH     = '400px';
 const Z_INDEX         = '2147483640'; // Near-max; above most host-page elements
@@ -36,14 +36,14 @@ const PLATFORM_LABELS = {
 
 /**
  * Build the CSS string for all injected elements.
- * Uses a unique prefix `lms-` on every class / ID to avoid conflicts with the
+ * Uses a unique prefix `anyllm-` on every class / ID to avoid conflicts with the
  * host page's stylesheet.
  *
  * @returns {string}
  */
 function buildStyles() {
   return `
-/* ── LM-Source Context Panel — Injected Styles ── */
+/* ── AnyLLM Context Panel — Injected Styles ── */
 
 #${PANEL_ID} {
   position: fixed;
@@ -66,12 +66,12 @@ function buildStyles() {
   overflow: hidden;
 }
 
-#${PANEL_ID}.lms-panel-open {
+#${PANEL_ID}.anyllm-panel-open {
   transform: translateX(0);
 }
 
 /* ── Header ── */
-.lms-panel-header {
+.anyllm-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -81,7 +81,7 @@ function buildStyles() {
   flex-shrink: 0;
 }
 
-.lms-panel-title {
+.anyllm-panel-title {
   font-size: 14px;
   font-weight: 700;
   color: #a5b4fc;
@@ -91,27 +91,27 @@ function buildStyles() {
   gap: 8px;
 }
 
-.lms-panel-title .lms-logo-dot {
+.anyllm-panel-title .anyllm-logo-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: linear-gradient(135deg, #818cf8, #34d399);
   box-shadow: 0 0 6px rgba(129, 140, 248, 0.6);
-  animation: lms-pulse 2.5s ease-in-out infinite;
+  animation: anyllm-pulse 2.5s ease-in-out infinite;
 }
 
-@keyframes lms-pulse {
+@keyframes anyllm-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.6; transform: scale(0.85); }
 }
 
-.lms-panel-actions {
+.anyllm-panel-actions {
   display: flex;
   gap: 6px;
   align-items: center;
 }
 
-.lms-icon-btn {
+.anyllm-icon-btn {
   background: none;
   border: none;
   color: #94a3b8;
@@ -124,10 +124,10 @@ function buildStyles() {
   display: flex;
   align-items: center;
 }
-.lms-icon-btn:hover { background: rgba(99,102,241,0.15); color: #e2e8f0; }
+.anyllm-icon-btn:hover { background: rgba(99,102,241,0.15); color: #e2e8f0; }
 
 /* ── Metadata row ── */
-.lms-meta-row {
+.anyllm-meta-row {
   padding: 8px 16px;
   background: rgba(15, 17, 23, 0.5);
   border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -139,7 +139,7 @@ function buildStyles() {
   flex-shrink: 0;
 }
 
-.lms-meta-chip {
+.anyllm-meta-chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -153,14 +153,14 @@ function buildStyles() {
 }
 
 /* ── Tab bar ── */
-.lms-tab-bar {
+.anyllm-tab-bar {
   display: flex;
   background: rgba(15,17,23,0.7);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
 
-.lms-tab-btn {
+.anyllm-tab-btn {
   flex: 1;
   padding: 9px 4px;
   background: none;
@@ -173,32 +173,32 @@ function buildStyles() {
   transition: color 0.15s, border-color 0.15s;
   text-align: center;
 }
-.lms-tab-btn:hover { color: #94a3b8; }
-.lms-tab-btn.lms-active {
+.anyllm-tab-btn:hover { color: #94a3b8; }
+.anyllm-tab-btn.anyllm-active {
   color: #818cf8;
   border-bottom-color: #818cf8;
 }
 
 /* ── Scrollable body ── */
-.lms-panel-body {
+.anyllm-panel-body {
   flex: 1;
   overflow-y: auto;
   padding: 0;
   scrollbar-width: thin;
   scrollbar-color: rgba(99,102,241,0.3) transparent;
 }
-.lms-panel-body::-webkit-scrollbar { width: 5px; }
-.lms-panel-body::-webkit-scrollbar-thumb {
+.anyllm-panel-body::-webkit-scrollbar { width: 5px; }
+.anyllm-panel-body::-webkit-scrollbar-thumb {
   background: rgba(99,102,241,0.35);
   border-radius: 999px;
 }
 
 /* ── Tab content panes ── */
-.lms-tab-pane { display: none; padding: 14px 16px; }
-.lms-tab-pane.lms-active { display: block; }
+.anyllm-tab-pane { display: none; padding: 14px 16px; }
+.anyllm-tab-pane.anyllm-active { display: block; }
 
 /* ── Section headings ── */
-.lms-section-heading {
+.anyllm-section-heading {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -208,10 +208,10 @@ function buildStyles() {
   padding-bottom: 4px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.lms-section-heading:first-child { margin-top: 0; }
+.anyllm-section-heading:first-child { margin-top: 0; }
 
 /* ── Empty state ── */
-.lms-empty {
+.anyllm-empty {
   text-align: center;
   color: #374151;
   padding: 28px 16px;
@@ -219,14 +219,14 @@ function buildStyles() {
 }
 
 /* ── Topics pills ── */
-.lms-topics-wrap {
+.anyllm-topics-wrap {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 12px;
 }
 
-.lms-topic-pill {
+.anyllm-topic-pill {
   background: rgba(52, 211, 153, 0.1);
   border: 1px solid rgba(52, 211, 153, 0.2);
   color: #34d399;
@@ -238,7 +238,7 @@ function buildStyles() {
 }
 
 /* ── Decision / Next-step cards ── */
-.lms-card {
+.anyllm-card {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: 8px;
@@ -249,24 +249,24 @@ function buildStyles() {
   position: relative;
   transition: border-color 0.15s;
 }
-.lms-card:hover { border-color: rgba(99,102,241,0.3); }
+.anyllm-card:hover { border-color: rgba(99,102,241,0.3); }
 
-.lms-card-role {
+.anyllm-card-role {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-bottom: 4px;
 }
-.lms-card-role.user { color: #60a5fa; }
-.lms-card-role.assistant { color: #a78bfa; }
-.lms-card-role.unknown { color: #94a3b8; }
+.anyllm-card-role.user { color: #60a5fa; }
+.anyllm-card-role.assistant { color: #a78bfa; }
+.anyllm-card-role.unknown { color: #94a3b8; }
 
-.lms-decision-card { border-left: 3px solid rgba(251, 191, 36, 0.5); }
-.lms-nextstep-card  { border-left: 3px solid rgba(52, 211, 153, 0.5); }
+.anyllm-decision-card { border-left: 3px solid rgba(251, 191, 36, 0.5); }
+.anyllm-nextstep-card  { border-left: 3px solid rgba(52, 211, 153, 0.5); }
 
 /* ── Code block cards ── */
-.lms-code-card {
+.anyllm-code-card {
   background: rgba(15,17,23,0.9);
   border: 1px solid rgba(99,102,241,0.2);
   border-radius: 8px;
@@ -274,7 +274,7 @@ function buildStyles() {
   overflow: hidden;
 }
 
-.lms-code-header {
+.anyllm-code-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -283,14 +283,14 @@ function buildStyles() {
   border-bottom: 1px solid rgba(99,102,241,0.15);
 }
 
-.lms-code-lang {
+.anyllm-code-lang {
   font-size: 10.5px;
   font-weight: 600;
   color: #818cf8;
   text-transform: lowercase;
 }
 
-.lms-copy-btn {
+.anyllm-copy-btn {
   background: none;
   border: none;
   color: #64748b;
@@ -300,10 +300,10 @@ function buildStyles() {
   border-radius: 4px;
   transition: background 0.15s, color 0.15s;
 }
-.lms-copy-btn:hover { background: rgba(99,102,241,0.15); color: #a5b4fc; }
-.lms-copy-btn.lms-copied { color: #34d399; }
+.anyllm-copy-btn:hover { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+.anyllm-copy-btn.anyllm-copied { color: #34d399; }
 
-.lms-code-body {
+.anyllm-code-body {
   padding: 10px 12px;
   font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
   font-size: 11.5px;
@@ -317,7 +317,7 @@ function buildStyles() {
 }
 
 /* ── Handoff prompt textarea ── */
-.lms-handoff-area {
+.anyllm-handoff-area {
   width: 100%;
   min-height: 220px;
   background: rgba(15,17,23,0.9);
@@ -332,16 +332,16 @@ function buildStyles() {
   outline: none;
   transition: border-color 0.15s;
 }
-.lms-handoff-area:focus { border-color: rgba(99,102,241,0.5); }
+.anyllm-handoff-area:focus { border-color: rgba(99,102,241,0.5); }
 
-.lms-handoff-actions {
+.anyllm-handoff-actions {
   display: flex;
   gap: 8px;
   margin-top: 10px;
   flex-wrap: wrap;
 }
 
-.lms-action-btn {
+.anyllm-action-btn {
   flex: 1;
   min-width: 90px;
   padding: 8px 12px;
@@ -353,28 +353,28 @@ function buildStyles() {
   transition: all 0.2s;
   text-align: center;
 }
-.lms-action-btn.primary {
+.anyllm-action-btn.primary {
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border-color: transparent;
   color: #fff;
 }
-.lms-action-btn.primary:hover {
+.anyllm-action-btn.primary:hover {
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   transform: translateY(-1px);
 }
-.lms-action-btn.secondary {
+.anyllm-action-btn.secondary {
   background: transparent;
   border-color: rgba(99,102,241,0.35);
   color: #818cf8;
 }
-.lms-action-btn.secondary:hover {
+.anyllm-action-btn.secondary:hover {
   background: rgba(99,102,241,0.1);
   transform: translateY(-1px);
 }
-.lms-action-btn.success { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.35); color: #34d399; }
+.anyllm-action-btn.success { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.35); color: #34d399; }
 
 /* ── Condensed timeline ── */
-.lms-timeline-msg {
+.anyllm-timeline-msg {
   border-left: 2px solid rgba(255,255,255,0.06);
   margin-bottom: 10px;
   padding: 6px 10px;
@@ -384,28 +384,28 @@ function buildStyles() {
   border-radius: 0 6px 6px 0;
   transition: border-color 0.15s;
 }
-.lms-timeline-msg.verbatim {
+.anyllm-timeline-msg.verbatim {
   border-left-color: rgba(99,102,241,0.4);
   color: #e2e8f0;
   background: rgba(99,102,241,0.04);
 }
-.lms-timeline-msg.user { border-left-color: rgba(96,165,250,0.4); }
-.lms-timeline-msg.verbatim.user { background: rgba(96,165,250,0.04); }
-.lms-timeline-msg.assistant { border-left-color: rgba(167,139,250,0.4); }
-.lms-timeline-msg.verbatim.assistant { background: rgba(167,139,250,0.04); }
+.anyllm-timeline-msg.user { border-left-color: rgba(96,165,250,0.4); }
+.anyllm-timeline-msg.verbatim.user { background: rgba(96,165,250,0.04); }
+.anyllm-timeline-msg.assistant { border-left-color: rgba(167,139,250,0.4); }
+.anyllm-timeline-msg.verbatim.assistant { background: rgba(167,139,250,0.04); }
 
-.lms-tl-label {
+.anyllm-tl-label {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin-bottom: 3px;
 }
-.lms-timeline-msg.user .lms-tl-label { color: #60a5fa; }
-.lms-timeline-msg.assistant .lms-tl-label { color: #a78bfa; }
-.lms-timeline-msg.unknown .lms-tl-label { color: #64748b; }
+.anyllm-timeline-msg.user .anyllm-tl-label { color: #60a5fa; }
+.anyllm-timeline-msg.assistant .anyllm-tl-label { color: #a78bfa; }
+.anyllm-timeline-msg.unknown .anyllm-tl-label { color: #64748b; }
 
-.lms-verbatim-badge {
+.anyllm-verbatim-badge {
   font-size: 9px;
   background: rgba(99,102,241,0.2);
   color: #818cf8;
@@ -445,7 +445,7 @@ function buildStyles() {
 }
 
 /* ── Footer ── */
-.lms-panel-footer {
+.anyllm-panel-footer {
   flex-shrink: 0;
   padding: 8px 14px;
   border-top: 1px solid rgba(255,255,255,0.05);
@@ -456,7 +456,7 @@ function buildStyles() {
   color: #374151;
 }
 
-.lms-refresh-btn {
+.anyllm-refresh-btn {
   background: none;
   border: 1px solid rgba(99,102,241,0.25);
   color: #6366f1;
@@ -467,7 +467,7 @@ function buildStyles() {
   cursor: pointer;
   transition: all 0.15s;
 }
-.lms-refresh-btn:hover { background: rgba(99,102,241,0.1); }
+.anyllm-refresh-btn:hover { background: rgba(99,102,241,0.1); }
 `;
 }
 
@@ -488,11 +488,11 @@ function esc(str) {
 // ── Tab switching ─────────────────────────────────────────────────────────────
 
 function activateTab(panel, tabId) {
-  panel.querySelectorAll('.lms-tab-btn').forEach(btn => {
-    btn.classList.toggle('lms-active', btn.dataset.tab === tabId);
+  panel.querySelectorAll('.anyllm-tab-btn').forEach(btn => {
+    btn.classList.toggle('anyllm-active', btn.dataset.tab === tabId);
   });
-  panel.querySelectorAll('.lms-tab-pane').forEach(pane => {
-    pane.classList.toggle('lms-active', pane.dataset.pane === tabId);
+  panel.querySelectorAll('.anyllm-tab-pane').forEach(pane => {
+    pane.classList.toggle('anyllm-active', pane.dataset.pane === tabId);
   });
 }
 
@@ -506,15 +506,15 @@ function activateTab(panel, tabId) {
 function renderSummaryTab(ctx) {
   const timestamp = new Date(ctx.extractedAt).toLocaleTimeString();
   const topicPills = ctx.topics.length
-    ? ctx.topics.map(t => `<span class="lms-topic-pill">${esc(t)}</span>`).join('')
-    : '<span class="lms-empty">No topics detected.</span>';
+    ? ctx.topics.map(t => `<span class="anyllm-topic-pill">${esc(t)}</span>`).join('')
+    : '<span class="anyllm-empty">No topics detected.</span>';
 
   return `
-    <p class="lms-section-heading">Topics & Entities</p>
-    <div class="lms-topics-wrap">${topicPills}</div>
+    <p class="anyllm-section-heading">Topics & Entities</p>
+    <div class="anyllm-topics-wrap">${topicPills}</div>
 
-    <p class="lms-section-heading">Stats</p>
-    <div class="lms-meta-row" style="padding:0; border:none; background:none; gap:8px; flex-direction:column;">
+    <p class="anyllm-section-heading">Stats</p>
+    <div class="anyllm-meta-row" style="padding:0; border:none; background:none; gap:8px; flex-direction:column;">
       <div>💬 <strong>${ctx.totalMessages}</strong> total messages
         (<span style="color:#60a5fa">${ctx.userCount} user</span>,
          <span style="color:#a78bfa">${ctx.assistantCount} assistant</span>)
@@ -534,28 +534,28 @@ function renderSummaryTab(ctx) {
  */
 function renderDecisionsTab(ctx) {
   if (ctx.decisions.length === 0) {
-    return `<div class="lms-empty">No decisions or conclusions detected in this conversation.</div>`;
+    return `<div class="anyllm-empty">No decisions or conclusions detected in this conversation.</div>`;
   }
 
   const cards = ctx.decisions.map(d => `
-    <div class="lms-card lms-decision-card">
-      <div class="lms-card-role ${esc(d.role)}">${esc(d.role)}</div>
+    <div class="anyllm-card anyllm-decision-card">
+      <div class="anyllm-card-role ${esc(d.role)}">${esc(d.role)}</div>
       <div>${esc(d.sentence)}</div>
     </div>
   `).join('');
 
   const steps = ctx.nextSteps.length === 0 ? '' : `
-    <p class="lms-section-heading">Next Steps</p>
+    <p class="anyllm-section-heading">Next Steps</p>
     ${ctx.nextSteps.map(s => `
-      <div class="lms-card lms-nextstep-card">
-        <div class="lms-card-role ${esc(s.role)}">${esc(s.role)}</div>
+      <div class="anyllm-card anyllm-nextstep-card">
+        <div class="anyllm-card-role ${esc(s.role)}">${esc(s.role)}</div>
         <div>${esc(s.sentence)}</div>
       </div>
     `).join('')}
   `;
 
   return `
-    <p class="lms-section-heading">Key Decisions (${ctx.decisions.length})</p>
+    <p class="anyllm-section-heading">Key Decisions (${ctx.decisions.length})</p>
     ${cards}
     ${steps}
   `;
@@ -568,16 +568,16 @@ function renderDecisionsTab(ctx) {
  */
 function renderCodeTab(ctx) {
   if (ctx.codeBlocks.length === 0) {
-    return `<div class="lms-empty">No fenced code blocks detected in this conversation.</div>`;
+    return `<div class="anyllm-empty">No fenced code blocks detected in this conversation.</div>`;
   }
 
   return ctx.codeBlocks.map((block, idx) => `
-    <div class="lms-code-card" data-block-idx="${idx}">
-      <div class="lms-code-header">
-        <span class="lms-code-lang">${esc(block.language || 'plaintext')}</span>
-        <button class="lms-copy-btn" data-copy-idx="${idx}" title="Copy code">📋 Copy</button>
+    <div class="anyllm-code-card" data-block-idx="${idx}">
+      <div class="anyllm-code-header">
+        <span class="anyllm-code-lang">${esc(block.language || 'plaintext')}</span>
+        <button class="anyllm-copy-btn" data-copy-idx="${idx}" title="Copy code">📋 Copy</button>
       </div>
-      <pre class="lms-code-body">${esc(block.code)}</pre>
+      <pre class="anyllm-code-body">${esc(block.code)}</pre>
     </div>
   `).join('');
 }
@@ -589,17 +589,17 @@ function renderCodeTab(ctx) {
  */
 function renderTimelineTab(ctx) {
   if (ctx.condensed.length === 0) {
-    return `<div class="lms-empty">No messages to display.</div>`;
+    return `<div class="anyllm-empty">No messages to display.</div>`;
   }
 
   return ctx.condensed.map(msg => {
     const roleClass = msg.role === 'user' ? 'user' : msg.role === 'assistant' ? 'assistant' : 'unknown';
     const badge = msg.verbatim
-      ? `<span class="lms-verbatim-badge">VERBATIM</span>`
+      ? `<span class="anyllm-verbatim-badge">VERBATIM</span>`
       : '';
     return `
-      <div class="lms-timeline-msg ${roleClass} ${msg.verbatim ? 'verbatim' : ''}">
-        <div class="lms-tl-label">${esc(msg.role.toUpperCase())}${badge}</div>
+      <div class="anyllm-timeline-msg ${roleClass} ${msg.verbatim ? 'verbatim' : ''}">
+        <div class="anyllm-tl-label">${esc(msg.role.toUpperCase())}${badge}</div>
         <div>${esc(msg.text)}</div>
       </div>
     `;
@@ -613,21 +613,21 @@ function renderTimelineTab(ctx) {
  */
 function renderHandoffTab(ctx) {
   return `
-    <p class="lms-section-heading">Structured Handoff Prompt</p>
+    <p class="anyllm-section-heading">Structured Handoff Prompt</p>
     <p style="font-size:11.5px; color:#64748b; margin-bottom:10px;">
       This prompt packages your conversation context for seamless transfer to another LLM session.
       Copy it and paste it into a new chat to continue without losing context.
     </p>
     <textarea
-      id="lms-handoff-textarea"
-      class="lms-handoff-area"
+      id="anyllm-handoff-textarea"
+      class="anyllm-handoff-area"
       readonly
     >${esc(ctx.handoffPrompt)}</textarea>
-    <div class="lms-handoff-actions">
-      <button class="lms-action-btn primary" id="lms-copy-handoff">📋 Copy Prompt</button>
-      <button class="lms-action-btn secondary" id="lms-open-claude">Open Claude</button>
-      <button class="lms-action-btn secondary" id="lms-open-chatgpt">Open ChatGPT</button>
-      <button class="lms-action-btn secondary" id="lms-open-gemini">Open Gemini</button>
+    <div class="anyllm-handoff-actions">
+      <button class="anyllm-action-btn primary" id="anyllm-copy-handoff">📋 Copy Prompt</button>
+      <button class="anyllm-action-btn secondary" id="anyllm-open-claude">Open Claude</button>
+      <button class="anyllm-action-btn secondary" id="anyllm-open-chatgpt">Open ChatGPT</button>
+      <button class="anyllm-action-btn secondary" id="anyllm-open-gemini">Open Gemini</button>
     </div>
   `;
 }
@@ -643,41 +643,41 @@ function buildPanelHTML(ctx) {
   const platformLabel = PLATFORM_LABELS[ctx.platform] || PLATFORM_LABELS.unknown;
 
   return `
-    <div class="lms-panel-header">
-      <div class="lms-panel-title">
-        <span class="lms-logo-dot"></span>
-        LM-Source Context
+    <div class="anyllm-panel-header">
+      <div class="anyllm-panel-title">
+        <span class="anyllm-logo-dot"></span>
+        AnyLLM Context
       </div>
-      <div class="lms-panel-actions">
-        <button class="lms-icon-btn" id="lms-close-btn" title="Close panel">✕</button>
+      <div class="anyllm-panel-actions">
+        <button class="anyllm-icon-btn" id="anyllm-close-btn" title="Close panel">✕</button>
       </div>
     </div>
 
-    <div class="lms-meta-row">
-      <span class="lms-meta-chip">${esc(platformLabel)}</span>
-      <span class="lms-meta-chip">💬 ${ctx.totalMessages} msgs</span>
-      <span class="lms-meta-chip">🧠 ${ctx.decisions.length} decisions</span>
+    <div class="anyllm-meta-row">
+      <span class="anyllm-meta-chip">${esc(platformLabel)}</span>
+      <span class="anyllm-meta-chip">💬 ${ctx.totalMessages} msgs</span>
+      <span class="anyllm-meta-chip">🧠 ${ctx.decisions.length} decisions</span>
     </div>
 
-    <div class="lms-tab-bar">
-      <button class="lms-tab-btn lms-active" data-tab="summary">Summary</button>
-      <button class="lms-tab-btn" data-tab="decisions">Decisions</button>
-      <button class="lms-tab-btn" data-tab="code">Code (${ctx.codeBlocks.length})</button>
-      <button class="lms-tab-btn" data-tab="timeline">Timeline</button>
-      <button class="lms-tab-btn" data-tab="handoff">Handoff</button>
+    <div class="anyllm-tab-bar">
+      <button class="anyllm-tab-btn anyllm-active" data-tab="summary">Summary</button>
+      <button class="anyllm-tab-btn" data-tab="decisions">Decisions</button>
+      <button class="anyllm-tab-btn" data-tab="code">Code (${ctx.codeBlocks.length})</button>
+      <button class="anyllm-tab-btn" data-tab="timeline">Timeline</button>
+      <button class="anyllm-tab-btn" data-tab="handoff">Handoff</button>
     </div>
 
-    <div class="lms-panel-body">
-      <div class="lms-tab-pane lms-active" data-pane="summary">${renderSummaryTab(ctx)}</div>
-      <div class="lms-tab-pane" data-pane="decisions">${renderDecisionsTab(ctx)}</div>
-      <div class="lms-tab-pane" data-pane="code">${renderCodeTab(ctx)}</div>
-      <div class="lms-tab-pane" data-pane="timeline">${renderTimelineTab(ctx)}</div>
-      <div class="lms-tab-pane" data-pane="handoff">${renderHandoffTab(ctx)}</div>
+    <div class="anyllm-panel-body">
+      <div class="anyllm-tab-pane anyllm-active" data-pane="summary">${renderSummaryTab(ctx)}</div>
+      <div class="anyllm-tab-pane" data-pane="decisions">${renderDecisionsTab(ctx)}</div>
+      <div class="anyllm-tab-pane" data-pane="code">${renderCodeTab(ctx)}</div>
+      <div class="anyllm-tab-pane" data-pane="timeline">${renderTimelineTab(ctx)}</div>
+      <div class="anyllm-tab-pane" data-pane="handoff">${renderHandoffTab(ctx)}</div>
     </div>
 
-    <div class="lms-panel-footer">
-      <span>LM-Source v1.1.0</span>
-      <button class="lms-refresh-btn" id="lms-refresh-btn">↻ Refresh</button>
+    <div class="anyllm-panel-footer">
+      <span>AnyLLM v1.1.0</span>
+      <button class="anyllm-refresh-btn" id="anyllm-refresh-btn">↻ Refresh</button>
     </div>
   `;
 }
@@ -697,38 +697,38 @@ let _onRefresh = null;
  */
 function wireEvents(panel, ctx) {
   // Tab switching
-  panel.querySelectorAll('.lms-tab-btn').forEach(btn => {
+  panel.querySelectorAll('.anyllm-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => activateTab(panel, btn.dataset.tab));
   });
 
   // Close button
-  panel.querySelector('#lms-close-btn')?.addEventListener('click', () => ContextSidePanel.close());
+  panel.querySelector('#anyllm-close-btn')?.addEventListener('click', () => ContextSidePanel.close());
 
   // Refresh button
-  panel.querySelector('#lms-refresh-btn')?.addEventListener('click', () => {
+  panel.querySelector('#anyllm-refresh-btn')?.addEventListener('click', () => {
     if (typeof _onRefresh === 'function') _onRefresh();
   });
 
   // Copy individual code blocks
-  panel.querySelectorAll('.lms-copy-btn').forEach(btn => {
+  panel.querySelectorAll('.anyllm-copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = Number(btn.dataset.copyIdx);
       const block = ctx.codeBlocks[idx];
       if (!block) return;
       navigator.clipboard.writeText(block.code).then(() => {
         btn.textContent = '✅ Copied';
-        btn.classList.add('lms-copied');
+        btn.classList.add('anyllm-copied');
         setTimeout(() => {
           btn.textContent = '📋 Copy';
-          btn.classList.remove('lms-copied');
+          btn.classList.remove('anyllm-copied');
         }, 1800);
       });
     });
   });
 
   // Copy handoff prompt
-  panel.querySelector('#lms-copy-handoff')?.addEventListener('click', () => {
-    const btn = panel.querySelector('#lms-copy-handoff');
+  panel.querySelector('#anyllm-copy-handoff')?.addEventListener('click', () => {
+    const btn = panel.querySelector('#anyllm-copy-handoff');
     navigator.clipboard.writeText(ctx.handoffPrompt).then(() => {
       if (btn) {
         btn.textContent = '✅ Copied!';
@@ -743,14 +743,14 @@ function wireEvents(panel, ctx) {
 
   // Open target platform
   const platformUrls = {
-    '#lms-open-claude':   'https://claude.ai/new',
-    '#lms-open-chatgpt':  'https://chatgpt.com/',
-    '#lms-open-gemini':   'https://gemini.google.com/',
+    '#anyllm-open-claude':   'https://claude.ai/new',
+    '#anyllm-open-chatgpt':  'https://chatgpt.com/',
+    '#anyllm-open-gemini':   'https://gemini.google.com/',
   };
   for (const [selector, url] of Object.entries(platformUrls)) {
     panel.querySelector(selector)?.addEventListener('click', () => {
       chrome.runtime.sendMessage({
-        type: 'LMS_OPEN_URL',
+        type: 'ANYLLM_OPEN_URL',
         url,
       });
     });
@@ -784,7 +784,7 @@ const ContextSidePanel = {
       panel = document.createElement('div');
       panel.id = PANEL_ID;
       panel.setAttribute('role', 'complementary');
-      panel.setAttribute('aria-label', 'LM-Source Context Panel');
+      panel.setAttribute('aria-label', 'AnyLLM Context Panel');
       document.body.appendChild(panel);
     }
 
@@ -795,8 +795,8 @@ const ContextSidePanel = {
     if (!document.getElementById(TOGGLE_BTN_ID)) {
       const toggleBtn = document.createElement('button');
       toggleBtn.id = TOGGLE_BTN_ID;
-      toggleBtn.title = 'Toggle LM-Source Context Panel';
-      toggleBtn.innerHTML = '✦ LM-Source';
+      toggleBtn.title = 'Toggle AnyLLM Context Panel';
+      toggleBtn.innerHTML = '✦ AnyLLM';
       toggleBtn.addEventListener('click', () => ContextSidePanel.toggle());
       document.body.appendChild(toggleBtn);
     }
@@ -805,19 +805,19 @@ const ContextSidePanel = {
   /** Show the panel. */
   open() {
     const panel = getPanel();
-    if (panel) panel.classList.add('lms-panel-open');
+    if (panel) panel.classList.add('anyllm-panel-open');
   },
 
   /** Hide the panel. */
   close() {
     const panel = getPanel();
-    if (panel) panel.classList.remove('lms-panel-open');
+    if (panel) panel.classList.remove('anyllm-panel-open');
   },
 
   /** Toggle open/closed state. */
   toggle() {
     const panel = getPanel();
-    if (panel) panel.classList.toggle('lms-panel-open');
+    if (panel) panel.classList.toggle('anyllm-panel-open');
   },
 
   /** Remove the panel and its toggle button from the DOM entirely. */
@@ -835,7 +835,7 @@ const ContextSidePanel = {
 
   /** True if the panel is visible (open). */
   get isOpen() {
-    return !!getPanel()?.classList.contains('lms-panel-open');
+    return !!getPanel()?.classList.contains('anyllm-panel-open');
   },
 };
 

@@ -1,5 +1,5 @@
 // src/services/highlightService.js
-// LM-Source — Highlight Service (P2.6)
+// AnyLLM — Highlight Service (P2.6)
 //
 // Allows users to select text within messages and highlight it in three colours:
 // Yellow, Green, Red.
@@ -11,26 +11,26 @@
 
 import { DATA_TYPES, getCollection, setCollection, createHighlight } from './storage.js';
 
-const STYLE_ID = 'lms-highlight-styles';
+const STYLE_ID = 'anyllm-highlight-styles';
 
 function ensureStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = `
-    .lms-highlight {
+    .anyllm-highlight {
       position: relative;
       border-radius: 3px;
       padding: 0 2px;
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .lms-highlight:hover {
+    .anyllm-highlight:hover {
       opacity: 0.8;
     }
-    .lms-highlight-yellow { background-color: rgba(250, 204, 21, 0.4); border-bottom: 2px solid rgba(250, 204, 21, 0.8); }
-    .lms-highlight-green  { background-color: rgba(74, 222, 128, 0.4); border-bottom: 2px solid rgba(74, 222, 128, 0.8); }
-    .lms-highlight-red    { background-color: rgba(248, 113, 113, 0.4); border-bottom: 2px solid rgba(248, 113, 113, 0.8); }
+    .anyllm-highlight-yellow { background-color: rgba(250, 204, 21, 0.4); border-bottom: 2px solid rgba(250, 204, 21, 0.8); }
+    .anyllm-highlight-green  { background-color: rgba(74, 222, 128, 0.4); border-bottom: 2px solid rgba(74, 222, 128, 0.8); }
+    .anyllm-highlight-red    { background-color: rgba(248, 113, 113, 0.4); border-bottom: 2px solid rgba(248, 113, 113, 0.8); }
   `;
   document.head.appendChild(style);
 }
@@ -94,7 +94,7 @@ function _resolveRelativeXPath(path, root) {
     const result = evaluator.evaluate('.' + (path.startsWith('/') ? '' : '/') + path, root, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
     return result.singleNodeValue;
   } catch (e) {
-    console.error('[LM-Source][HighlightService] Failed to resolve XPath:', path, e);
+    console.error('[AnyLLM][HighlightService] Failed to resolve XPath:', path, e);
     return null;
   }
 }
@@ -110,8 +110,8 @@ function _resolveRelativeXPath(path, root) {
 function _applyHighlightDOM(range, record) {
   ensureStyles();
   const span = document.createElement('span');
-  span.className = `lms-highlight lms-highlight-${record.color}`;
-  span.dataset.lmsHighlightId = record.id;
+  span.className = `anyllm-highlight anyllm-highlight-${record.color}`;
+  span.dataset.anyllmHighlightId = record.id;
   span.title = 'Click to remove highlight';
   
   // Wrap range contents
@@ -119,7 +119,7 @@ function _applyHighlightDOM(range, record) {
     span.appendChild(range.extractContents());
     range.insertNode(span);
   } catch (e) {
-    console.error('[LM-Source][HighlightService] Failed to wrap range', e);
+    console.error('[AnyLLM][HighlightService] Failed to wrap range', e);
     return null;
   }
 
@@ -141,7 +141,7 @@ function _restoreHighlightDOM(msgRoot, record) {
   const endNode = _resolveRelativeXPath(record.endPath, msgRoot);
 
   if (!startNode || !endNode) {
-    console.warn(`[LM-Source][HighlightService] Could not resolve nodes for highlight ${record.id}`);
+    console.warn(`[AnyLLM][HighlightService] Could not resolve nodes for highlight ${record.id}`);
     return false;
   }
 
@@ -157,14 +157,14 @@ function _restoreHighlightDOM(msgRoot, record) {
     // Verify text matches roughly
     const rangeText = range.toString().trim();
     if (rangeText && !record.text.includes(rangeText) && !rangeText.includes(record.text)) {
-      console.warn(`[LM-Source][HighlightService] Text mismatch for highlight ${record.id}. Expected: "${record.text.slice(0, 20)}", Got: "${rangeText.slice(0, 20)}"`);
+      console.warn(`[AnyLLM][HighlightService] Text mismatch for highlight ${record.id}. Expected: "${record.text.slice(0, 20)}", Got: "${rangeText.slice(0, 20)}"`);
       // We still apply it, but it might be off
     }
 
     _applyHighlightDOM(range, record);
     return true;
   } catch (e) {
-    console.warn(`[LM-Source][HighlightService] Failed to restore highlight ${record.id}`, e);
+    console.warn(`[AnyLLM][HighlightService] Failed to restore highlight ${record.id}`, e);
     return false;
   }
 }
@@ -207,7 +207,7 @@ async function removeHighlight(record) {
   await _saveRecords(record.platform, record.conversationId, filtered);
 
   // Remove from DOM
-  const span = document.querySelector(`[data-lms-highlight-id="${record.id}"]`);
+  const span = document.querySelector(`[data-anyllm-highlight-id="${record.id}"]`);
   if (span) {
     const parent = span.parentNode;
     while (span.firstChild) {
@@ -227,7 +227,7 @@ async function getHighlights(platform, conversationId) {
 async function clearHighlights(platform, conversationId) {
   const records = await _loadRecords(platform, conversationId);
   for (const r of records) {
-    const span = document.querySelector(`[data-lms-highlight-id="${r.id}"]`);
+    const span = document.querySelector(`[data-anyllm-highlight-id="${r.id}"]`);
     if (span) {
       const parent = span.parentNode;
       while (span.firstChild) parent.insertBefore(span.firstChild, span);
@@ -256,13 +256,13 @@ async function applyHighlightsToDOM(adapterRef, platform, conversationId) {
     const msgRoot = elementsMap.get(record.messageId);
     if (msgRoot) {
       // Avoid duplicating if already injected
-      if (!msgRoot.querySelector(`[data-lms-highlight-id="${record.id}"]`)) {
+      if (!msgRoot.querySelector(`[data-anyllm-highlight-id="${record.id}"]`)) {
         if (_restoreHighlightDOM(msgRoot, record)) count++;
       }
     }
   }
 
-  console.log(`[LM-Source][HighlightService] Re-applied ${count} highlight(s) after page load`);
+  console.log(`[AnyLLM][HighlightService] Re-applied ${count} highlight(s) after page load`);
   return count;
 }
 

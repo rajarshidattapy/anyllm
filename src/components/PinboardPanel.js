@@ -1,5 +1,5 @@
 // src/components/PinboardPanel.js
-// LM-Source — Pinboard Panel (P2.3)
+// AnyLLM — Pinboard Panel (P2.3)
 //
 // A sliding side panel (similar to ContextSidePanel but for pins) that renders
 // all pinned messages for the current conversation, supports drag-and-drop
@@ -18,9 +18,9 @@
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const PANEL_ID      = 'lms-pinboard-panel';
-const TOGGLE_BTN_ID = 'lms-pinboard-toggle';
-const STYLE_ID      = 'lms-pinboard-styles';
+const PANEL_ID      = 'anyllm-pinboard-panel';
+const TOGGLE_BTN_ID = 'anyllm-pinboard-toggle';
+const STYLE_ID      = 'anyllm-pinboard-styles';
 const Z_INDEX       = '2147483635';
 
 // Platform accent colours (match ContextSidePanel palette)
@@ -34,7 +34,7 @@ const ROLE_COLORS = {
 
 function buildStyles() {
   return `
-/* ── LM-Source Pinboard Panel ── */
+/* ── AnyLLM Pinboard Panel ── */
 
 #${PANEL_ID} {
   position: fixed;
@@ -56,12 +56,12 @@ function buildStyles() {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
-#${PANEL_ID}.lms-pb-open {
+#${PANEL_ID}.anyllm-pb-open {
   transform: translateX(0);
 }
 
 /* Header */
-.lms-pb-header {
+.anyllm-pb-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -70,7 +70,7 @@ function buildStyles() {
   border-bottom: 1px solid rgba(245, 158, 11, 0.18);
   flex-shrink: 0;
 }
-.lms-pb-title {
+.anyllm-pb-title {
   font-size: 14px;
   font-weight: 700;
   color: #fbbf24;
@@ -79,15 +79,15 @@ function buildStyles() {
   gap: 8px;
   letter-spacing: 0.03em;
 }
-.lms-pb-pin-icon {
+.anyllm-pb-pin-icon {
   font-size: 16px;
-  animation: lms-pb-sway 3s ease-in-out infinite;
+  animation: anyllm-pb-sway 3s ease-in-out infinite;
 }
-@keyframes lms-pb-sway {
+@keyframes anyllm-pb-sway {
   0%, 100% { transform: rotate(-8deg); }
   50%       { transform: rotate(8deg); }
 }
-.lms-pb-close-btn {
+.anyllm-pb-close-btn {
   background: none;
   border: none;
   color: #94a3b8;
@@ -97,10 +97,10 @@ function buildStyles() {
   font-size: 14px;
   transition: background 0.15s, color 0.15s;
 }
-.lms-pb-close-btn:hover { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.anyllm-pb-close-btn:hover { background: rgba(245,158,11,0.12); color: #fbbf24; }
 
 /* Subtitle / meta */
-.lms-pb-meta {
+.anyllm-pb-meta {
   padding: 8px 16px;
   font-size: 11px;
   color: #64748b;
@@ -110,7 +110,7 @@ function buildStyles() {
   align-items: center;
   justify-content: space-between;
 }
-.lms-pb-count {
+.anyllm-pb-count {
   background: rgba(245,158,11,0.12);
   color: #f59e0b;
   border-radius: 999px;
@@ -120,21 +120,21 @@ function buildStyles() {
 }
 
 /* Scrollable body */
-.lms-pb-body {
+.anyllm-pb-body {
   flex: 1;
   overflow-y: auto;
   padding: 12px 14px;
   scrollbar-width: thin;
   scrollbar-color: rgba(245,158,11,0.25) transparent;
 }
-.lms-pb-body::-webkit-scrollbar { width: 4px; }
-.lms-pb-body::-webkit-scrollbar-thumb {
+.anyllm-pb-body::-webkit-scrollbar { width: 4px; }
+.anyllm-pb-body::-webkit-scrollbar-thumb {
   background: rgba(245,158,11,0.3);
   border-radius: 999px;
 }
 
 /* Empty state */
-.lms-pb-empty {
+.anyllm-pb-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -145,10 +145,10 @@ function buildStyles() {
   text-align: center;
   gap: 10px;
 }
-.lms-pb-empty-icon { font-size: 36px; opacity: 0.4; }
+.anyllm-pb-empty-icon { font-size: 36px; opacity: 0.4; }
 
 /* Pin card */
-.lms-pb-card {
+.anyllm-pb-card {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: 10px;
@@ -160,48 +160,48 @@ function buildStyles() {
   user-select: none;
   border-left: 3px solid rgba(245, 158, 11, 0.5);
 }
-.lms-pb-card:hover {
+.anyllm-pb-card:hover {
   border-color: rgba(245,158,11,0.35);
   box-shadow: 0 2px 12px rgba(0,0,0,0.3);
 }
-.lms-pb-card.lms-pb-dragging {
+.anyllm-pb-card.anyllm-pb-dragging {
   opacity: 0.45;
   cursor: grabbing;
 }
-.lms-pb-card.lms-pb-drag-over {
+.anyllm-pb-card.anyllm-pb-drag-over {
   border-color: rgba(245,158,11,0.7);
   box-shadow: 0 0 0 2px rgba(245,158,11,0.25);
   transform: scale(1.01);
 }
 
 /* Card header row */
-.lms-pb-card-header {
+.anyllm-pb-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 7px;
   gap: 8px;
 }
-.lms-pb-card-role {
+.anyllm-pb-card-role {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
-.lms-pb-card-meta {
+.anyllm-pb-card-meta {
   font-size: 10px;
   color: #374151;
   white-space: nowrap;
 }
-.lms-pb-card-actions {
+.anyllm-pb-card-actions {
   display: flex;
   gap: 4px;
   opacity: 0;
   transition: opacity 0.15s;
 }
-.lms-pb-card:hover .lms-pb-card-actions { opacity: 1; }
+.anyllm-pb-card:hover .anyllm-pb-card-actions { opacity: 1; }
 
-.lms-pb-action-btn {
+.anyllm-pb-action-btn {
   background: none;
   border: none;
   color: #64748b;
@@ -211,11 +211,11 @@ function buildStyles() {
   font-size: 12px;
   transition: background 0.13s, color 0.13s;
 }
-.lms-pb-action-btn:hover { background: rgba(245,158,11,0.12); color: #fbbf24; }
-.lms-pb-action-btn.unpin:hover { background: rgba(239,68,68,0.12); color: #f87171; }
+.anyllm-pb-action-btn:hover { background: rgba(245,158,11,0.12); color: #fbbf24; }
+.anyllm-pb-action-btn.unpin:hover { background: rgba(239,68,68,0.12); color: #f87171; }
 
 /* Card body — truncated text */
-.lms-pb-card-text {
+.anyllm-pb-card-text {
   font-size: 12px;
   color: #94a3b8;
   line-height: 1.5;
@@ -224,12 +224,12 @@ function buildStyles() {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.lms-pb-card-text.expanded {
+.anyllm-pb-card-text.expanded {
   -webkit-line-clamp: unset;
 }
 
 /* Expand / collapse toggle */
-.lms-pb-expand-btn {
+.anyllm-pb-expand-btn {
   background: none;
   border: none;
   color: #6366f1;
@@ -240,10 +240,10 @@ function buildStyles() {
   margin-top: 4px;
   transition: color 0.15s;
 }
-.lms-pb-expand-btn:hover { color: #818cf8; }
+.anyllm-pb-expand-btn:hover { color: #818cf8; }
 
 /* Drag handle */
-.lms-pb-drag-handle {
+.anyllm-pb-drag-handle {
   position: absolute;
   top: 50%;
   left: 6px;
@@ -256,7 +256,7 @@ function buildStyles() {
 }
 
 /* Footer */
-.lms-pb-footer {
+.anyllm-pb-footer {
   flex-shrink: 0;
   padding: 8px 14px;
   border-top: 1px solid rgba(255,255,255,0.05);
@@ -266,7 +266,7 @@ function buildStyles() {
   font-size: 10.5px;
   color: #374151;
 }
-.lms-pb-clear-btn {
+.anyllm-pb-clear-btn {
   background: none;
   border: 1px solid rgba(239,68,68,0.25);
   color: #ef4444;
@@ -277,7 +277,7 @@ function buildStyles() {
   cursor: pointer;
   transition: all 0.15s;
 }
-.lms-pb-clear-btn:hover { background: rgba(239,68,68,0.1); }
+.anyllm-pb-clear-btn:hover { background: rgba(239,68,68,0.1); }
 
 /* Floating toggle button (left edge, above ContextPanel's right-edge toggle) */
 #${TOGGLE_BTN_ID} {
@@ -341,28 +341,28 @@ function buildCardHTML(pin) {
   const hasMore   = pin.text.length > 350;
 
   return `
-    <div class="lms-pb-card"
+    <div class="anyllm-pb-card"
          draggable="true"
          data-pin-id="${esc(pin.id)}"
          data-message-id="${esc(pin.messageId)}">
-      <span class="lms-pb-drag-handle" aria-hidden="true">⋮⋮</span>
-      <div class="lms-pb-card-header">
-        <span class="lms-pb-card-role" style="color:${roleColor}">
+      <span class="anyllm-pb-drag-handle" aria-hidden="true">⋮⋮</span>
+      <div class="anyllm-pb-card-header">
+        <span class="anyllm-pb-card-role" style="color:${roleColor}">
           ${esc(pin.role)}
         </span>
-        <span class="lms-pb-card-meta">${esc(fmtDate(pin.pinnedAt))}</span>
-        <div class="lms-pb-card-actions">
-          <button class="lms-pb-action-btn copy-pin"
+        <span class="anyllm-pb-card-meta">${esc(fmtDate(pin.pinnedAt))}</span>
+        <div class="anyllm-pb-card-actions">
+          <button class="anyllm-pb-action-btn copy-pin"
                   data-pin-id="${esc(pin.id)}"
                   title="Copy text">📋</button>
-          <button class="lms-pb-action-btn unpin"
+          <button class="anyllm-pb-action-btn unpin"
                   data-pin-id="${esc(pin.id)}"
                   title="Unpin">✕</button>
         </div>
       </div>
-      <div class="lms-pb-card-text" data-pin-id="${esc(pin.id)}">${esc(preview)}</div>
+      <div class="anyllm-pb-card-text" data-pin-id="${esc(pin.id)}">${esc(preview)}</div>
       ${hasMore ? `
-        <button class="lms-pb-expand-btn" data-pin-id="${esc(pin.id)}"
+        <button class="anyllm-pb-expand-btn" data-pin-id="${esc(pin.id)}"
                 data-full-text="${esc(pin.text)}">Show more ▾</button>
       ` : ''}
     </div>
@@ -378,36 +378,36 @@ let _dragId = null;
 let _onReorder = null;
 
 function wireDragDrop(panel) {
-  const body = panel.querySelector('.lms-pb-body');
+  const body = panel.querySelector('.anyllm-pb-body');
   if (!body) return;
 
   body.addEventListener('dragstart', (e) => {
-    const card = e.target.closest('.lms-pb-card');
+    const card = e.target.closest('.anyllm-pb-card');
     if (!card) return;
     _dragId = card.dataset.pinId;
-    card.classList.add('lms-pb-dragging');
+    card.classList.add('anyllm-pb-dragging');
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', _dragId);
   });
 
   body.addEventListener('dragend', (e) => {
-    const card = e.target.closest('.lms-pb-card');
-    if (card) card.classList.remove('lms-pb-dragging');
-    body.querySelectorAll('.lms-pb-drag-over').forEach(el => el.classList.remove('lms-pb-drag-over'));
+    const card = e.target.closest('.anyllm-pb-card');
+    if (card) card.classList.remove('anyllm-pb-dragging');
+    body.querySelectorAll('.anyllm-pb-drag-over').forEach(el => el.classList.remove('anyllm-pb-drag-over'));
   });
 
   body.addEventListener('dragover', (e) => {
     e.preventDefault();
-    const card = e.target.closest('.lms-pb-card');
-    body.querySelectorAll('.lms-pb-drag-over').forEach(el => el.classList.remove('lms-pb-drag-over'));
+    const card = e.target.closest('.anyllm-pb-card');
+    body.querySelectorAll('.anyllm-pb-drag-over').forEach(el => el.classList.remove('anyllm-pb-drag-over'));
     if (card && card.dataset.pinId !== _dragId) {
-      card.classList.add('lms-pb-drag-over');
+      card.classList.add('anyllm-pb-drag-over');
     }
   });
 
   body.addEventListener('drop', (e) => {
     e.preventDefault();
-    const targetCard = e.target.closest('.lms-pb-card');
+    const targetCard = e.target.closest('.anyllm-pb-card');
     if (!targetCard || !_dragId) return;
 
     const targetId = targetCard.dataset.pinId;
@@ -417,7 +417,7 @@ function wireDragDrop(panel) {
     const dragCard = body.querySelector(`[data-pin-id="${_dragId}"]`);
     if (!dragCard) return;
 
-    const cards = [...body.querySelectorAll('.lms-pb-card')];
+    const cards = [...body.querySelectorAll('.anyllm-pb-card')];
     const dragIdx  = cards.findIndex(c => c.dataset.pinId === _dragId);
     const targetIdx = cards.findIndex(c => c.dataset.pinId === targetId);
 
@@ -428,12 +428,12 @@ function wireDragDrop(panel) {
     }
 
     // Persist new order
-    const newOrder = [...body.querySelectorAll('.lms-pb-card')].map(c => c.dataset.pinId);
+    const newOrder = [...body.querySelectorAll('.anyllm-pb-card')].map(c => c.dataset.pinId);
     if (typeof _onReorder === 'function') {
       _onReorder(newOrder);
     }
 
-    targetCard.classList.remove('lms-pb-drag-over');
+    targetCard.classList.remove('anyllm-pb-drag-over');
     _dragId = null;
   });
 }
@@ -445,27 +445,27 @@ let _onUnpin = null;
 
 function wireEvents(panel) {
   // Close button
-  panel.querySelector('.lms-pb-close-btn')?.addEventListener('click', () => PinboardPanel.close());
+  panel.querySelector('.anyllm-pb-close-btn')?.addEventListener('click', () => PinboardPanel.close());
 
   // Clear all
-  panel.querySelector('.lms-pb-clear-btn')?.addEventListener('click', () => {
+  panel.querySelector('.anyllm-pb-clear-btn')?.addEventListener('click', () => {
     if (confirm('Remove all pinned messages? This cannot be undone.')) {
       if (typeof _onUnpin === 'function') {
-        const cards = panel.querySelectorAll('.lms-pb-card');
+        const cards = panel.querySelectorAll('.anyllm-pb-card');
         cards.forEach(c => _onUnpin(c.dataset.pinId, true));
       }
     }
   });
 
   // Card-level actions (event delegation)
-  panel.querySelector('.lms-pb-body')?.addEventListener('click', (e) => {
+  panel.querySelector('.anyllm-pb-body')?.addEventListener('click', (e) => {
     // Copy
     const copyBtn = e.target.closest('.copy-pin');
     if (copyBtn) {
       const pinId = copyBtn.dataset.pinId;
-      const card  = panel.querySelector(`.lms-pb-card[data-pin-id="${pinId}"]`);
-      const fullText = card?.querySelector('.lms-pb-expand-btn')?.dataset.fullText
-        || card?.querySelector('.lms-pb-card-text')?.textContent
+      const card  = panel.querySelector(`.anyllm-pb-card[data-pin-id="${pinId}"]`);
+      const fullText = card?.querySelector('.anyllm-pb-expand-btn')?.dataset.fullText
+        || card?.querySelector('.anyllm-pb-card-text')?.textContent
         || '';
       navigator.clipboard.writeText(fullText.trim()).then(() => {
         copyBtn.textContent = '✅';
@@ -483,10 +483,10 @@ function wireEvents(panel) {
     }
 
     // Expand / collapse
-    const expandBtn = e.target.closest('.lms-pb-expand-btn');
+    const expandBtn = e.target.closest('.anyllm-pb-expand-btn');
     if (expandBtn) {
       const pinId   = expandBtn.dataset.pinId;
-      const textEl  = panel.querySelector(`.lms-pb-card-text[data-pin-id="${pinId}"]`);
+      const textEl  = panel.querySelector(`.anyllm-pb-card-text[data-pin-id="${pinId}"]`);
       const isExp   = textEl?.classList.contains('expanded');
       if (textEl) {
         textEl.classList.toggle('expanded');
@@ -516,31 +516,31 @@ function wireEvents(panel) {
 function buildPanelHTML(pins, platform, conversationId) {
   const count = pins.length;
   const cardsHTML = count === 0
-    ? `<div class="lms-pb-empty">
-         <span class="lms-pb-empty-icon">📌</span>
+    ? `<div class="anyllm-pb-empty">
+         <span class="anyllm-pb-empty-icon">📌</span>
          <span>No pins yet.<br>Hover a message and click 📌 to pin it.</span>
        </div>`
     : pins.map(buildCardHTML).join('');
 
   return `
-    <div class="lms-pb-header">
-      <div class="lms-pb-title">
-        <span class="lms-pb-pin-icon">📌</span>
+    <div class="anyllm-pb-header">
+      <div class="anyllm-pb-title">
+        <span class="anyllm-pb-pin-icon">📌</span>
         Pinboard
       </div>
-      <button class="lms-pb-close-btn" aria-label="Close pinboard">✕</button>
+      <button class="anyllm-pb-close-btn" aria-label="Close pinboard">✕</button>
     </div>
 
-    <div class="lms-pb-meta">
+    <div class="anyllm-pb-meta">
       <span>${esc(platform)} · ${esc(conversationId)}</span>
-      <span class="lms-pb-count">${count} pin${count !== 1 ? 's' : ''}</span>
+      <span class="anyllm-pb-count">${count} pin${count !== 1 ? 's' : ''}</span>
     </div>
 
-    <div class="lms-pb-body">${cardsHTML}</div>
+    <div class="anyllm-pb-body">${cardsHTML}</div>
 
-    <div class="lms-pb-footer">
+    <div class="anyllm-pb-footer">
       <span>Drag cards to reorder</span>
-      ${count > 0 ? '<button class="lms-pb-clear-btn">Clear all</button>' : ''}
+      ${count > 0 ? '<button class="anyllm-pb-clear-btn">Clear all</button>' : ''}
     </div>
   `;
 }
@@ -585,7 +585,7 @@ const PinboardPanel = {
       panel = document.createElement('div');
       panel.id = PANEL_ID;
       panel.setAttribute('role', 'complementary');
-      panel.setAttribute('aria-label', 'LM-Source Pinboard');
+      panel.setAttribute('aria-label', 'AnyLLM Pinboard');
       document.body.appendChild(panel);
     }
 
@@ -605,17 +605,17 @@ const PinboardPanel = {
 
   /** Open the panel. */
   open() {
-    getPanel()?.classList.add('lms-pb-open');
+    getPanel()?.classList.add('anyllm-pb-open');
   },
 
   /** Close the panel. */
   close() {
-    getPanel()?.classList.remove('lms-pb-open');
+    getPanel()?.classList.remove('anyllm-pb-open');
   },
 
   /** Toggle open/closed. */
   toggle() {
-    getPanel()?.classList.toggle('lms-pb-open');
+    getPanel()?.classList.toggle('anyllm-pb-open');
   },
 
   /**
@@ -627,10 +627,10 @@ const PinboardPanel = {
     if (!panel) return;
 
     // Remove empty state if present
-    const empty = panel.querySelector('.lms-pb-empty');
+    const empty = panel.querySelector('.anyllm-pb-empty');
     if (empty) empty.remove();
 
-    const body = panel.querySelector('.lms-pb-body');
+    const body = panel.querySelector('.anyllm-pb-body');
     if (body) {
       const tmp = document.createElement('div');
       tmp.innerHTML = buildCardHTML(pin);
@@ -639,13 +639,13 @@ const PinboardPanel = {
         body.appendChild(card);
         // Update count chip
         _pins = [..._pins, pin];
-        const chip = panel.querySelector('.lms-pb-count');
+        const chip = panel.querySelector('.anyllm-pb-count');
         if (chip) chip.textContent = `${_pins.length} pin${_pins.length !== 1 ? 's' : ''}`;
         // Ensure clear-all button exists
-        const footer = panel.querySelector('.lms-pb-footer');
-        if (footer && !footer.querySelector('.lms-pb-clear-btn')) {
+        const footer = panel.querySelector('.anyllm-pb-footer');
+        if (footer && !footer.querySelector('.anyllm-pb-clear-btn')) {
           const btn = document.createElement('button');
-          btn.className = 'lms-pb-clear-btn';
+          btn.className = 'anyllm-pb-clear-btn';
           btn.textContent = 'Clear all';
           btn.addEventListener('click', () => {
             if (confirm('Remove all pinned messages?')) {
@@ -668,20 +668,20 @@ const PinboardPanel = {
     const panel = getPanel();
     if (!panel) return;
 
-    panel.querySelector(`.lms-pb-card[data-pin-id="${pinId}"]`)?.remove();
+    panel.querySelector(`.anyllm-pb-card[data-pin-id="${pinId}"]`)?.remove();
     _pins = _pins.filter(p => p.id !== pinId);
 
-    const chip = panel.querySelector('.lms-pb-count');
+    const chip = panel.querySelector('.anyllm-pb-count');
     if (chip) chip.textContent = `${_pins.length} pin${_pins.length !== 1 ? 's' : ''}`;
 
     // Show empty state if no pins remain
-    const body = panel.querySelector('.lms-pb-body');
+    const body = panel.querySelector('.anyllm-pb-body');
     if (body && _pins.length === 0) {
-      body.innerHTML = `<div class="lms-pb-empty">
-        <span class="lms-pb-empty-icon">📌</span>
+      body.innerHTML = `<div class="anyllm-pb-empty">
+        <span class="anyllm-pb-empty-icon">📌</span>
         <span>No pins yet.<br>Hover a message and click 📌 to pin it.</span>
       </div>`;
-      panel.querySelector('.lms-pb-clear-btn')?.remove();
+      panel.querySelector('.anyllm-pb-clear-btn')?.remove();
     }
   },
 
@@ -694,7 +694,7 @@ const PinboardPanel = {
   },
 
   get isOpen() {
-    return !!getPanel()?.classList.contains('lms-pb-open');
+    return !!getPanel()?.classList.contains('anyllm-pb-open');
   },
   get isRendered() {
     return !!getPanel();

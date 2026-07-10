@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "LM-Source",
+  "name": "AnyLLM",
   "version": "1.1.0",
   "description": "Supercharge Claude, ChatGPT & Gemini: extract context, pin messages, edit AI responses, and hand off conversations seamlessly.",
   "icons": {

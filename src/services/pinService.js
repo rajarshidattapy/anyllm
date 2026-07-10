@@ -1,9 +1,9 @@
 // src/services/pinService.js
-// LM-Source — Pin Service (P2.3)
+// AnyLLM — Pin Service (P2.3)
 //
 // Handles all create / read / update / delete operations for pinned messages.
 // Data is persisted via StorageService (P1.3) under the namespace:
-//   lms::<platform>::<conversationId>::pin
+//   anyllm::<platform>::<conversationId>::pin
 //
 // Public API:
 //   pinMessage(messageData)              — pin a message; returns the new Pin
@@ -40,7 +40,7 @@ const _listeners = new Set();
 function _notify(event, detail) {
   _listeners.forEach(cb => {
     try { cb(event, detail); } catch (e) {
-      console.error('[LM-Source][PinService] Listener error:', e);
+      console.error('[AnyLLM][PinService] Listener error:', e);
     }
   });
 }
@@ -86,10 +86,10 @@ async function pinMessage(messageData) {
 
   const ok = await appendToCollection(platform, conversationId, DATA_TYPES.PIN, pin);
   if (!ok) {
-    throw new Error(`[LM-Source][PinService] Failed to save pin for message ${messageId}`);
+    throw new Error(`[AnyLLM][PinService] Failed to save pin for message ${messageId}`);
   }
 
-  console.log(`[LM-Source][PinService] Pinned message ${messageId} (order ${order})`);
+  console.log(`[AnyLLM][PinService] Pinned message ${messageId} (order ${order})`);
   _notify('pinned', { pin });
   return pin;
 }
@@ -105,7 +105,7 @@ async function pinMessage(messageData) {
 async function unpinMessage(pinId, platform, conversationId) {
   const ok = await removeFromCollection(platform, conversationId, DATA_TYPES.PIN, pinId);
   if (ok) {
-    console.log(`[LM-Source][PinService] Unpinned pin ${pinId}`);
+    console.log(`[AnyLLM][PinService] Unpinned pin ${pinId}`);
     _notify('unpinned', { pinId, platform, conversationId });
   }
   return ok;
@@ -133,7 +133,7 @@ async function getAllPins() {
   const all = await getAll();
   const pins = [];
   for (const [key, value] of Object.entries(all)) {
-    if (!key.startsWith('lms::') || !key.endsWith(`::${DATA_TYPES.PIN}`)) continue;
+    if (!key.startsWith('anyllm::') || !key.endsWith(`::${DATA_TYPES.PIN}`)) continue;
     if (Array.isArray(value)) {
       pins.push(...value);
     }

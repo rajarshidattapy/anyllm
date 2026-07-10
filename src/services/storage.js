@@ -1,5 +1,5 @@
 // src/services/storage.js
-// LM-Source Storage Service
+// AnyLLM Storage Service
 //
 // Wraps chrome.storage.local with:
 //  - Namespaced keys per platform + conversation + type
@@ -38,7 +38,7 @@ const PLATFORMS = Object.freeze({
 /**
  * Build a deterministic storage key for a given platform / conversation / type.
  *
- * Format: `lms::<platform>::<conversationId>::<type>`
+ * Format: `anyllm::<platform>::<conversationId>::<type>`
  *
  * @param {string} platform       - One of PLATFORMS values.
  * @param {string} conversationId - Unique ID for the conversation thread.
@@ -48,22 +48,22 @@ const PLATFORMS = Object.freeze({
 function getNamespaceKey(platform, conversationId, type) {
   if (!platform || !conversationId || !type) {
     throw new Error(
-      `[LM-Source][Storage] getNamespaceKey: all arguments are required. ` +
+      `[AnyLLM][Storage] getNamespaceKey: all arguments are required. ` +
       `Received: platform="${platform}", conversationId="${conversationId}", type="${type}"`
     );
   }
-  return `lms::${platform}::${conversationId}::${type}`;
+  return `anyllm::${platform}::${conversationId}::${type}`;
 }
 
 /**
  * Parse a namespace key back into its components.
- * Returns null if the key does not follow the LM-Source format.
+ * Returns null if the key does not follow the AnyLLM format.
  *
  * @param {string} key
  * @returns {{ platform: string, conversationId: string, type: string } | null}
  */
 function parseNamespaceKey(key) {
-  if (!key || !key.startsWith('lms::')) return null;
+  if (!key || !key.startsWith('anyllm::')) return null;
   const parts = key.split('::');
   if (parts.length !== 4) return null;
   const [, platform, conversationId, type] = parts;
@@ -85,7 +85,7 @@ async function get(key) {
     const result = await chrome.storage.local.get(key);
     return result[key];
   } catch (err) {
-    console.error('[LM-Source][Storage] get() failed for key:', key, err);
+    console.error('[AnyLLM][Storage] get() failed for key:', key, err);
     return undefined;
   }
 }
@@ -108,7 +108,7 @@ async function set(key, value) {
     await chrome.storage.local.set({ [key]: stored });
     return true;
   } catch (err) {
-    console.error('[LM-Source][Storage] set() failed for key:', key, err);
+    console.error('[AnyLLM][Storage] set() failed for key:', key, err);
     return false;
   }
 }
@@ -124,7 +124,7 @@ async function remove(keys) {
     await chrome.storage.local.remove(keys);
     return true;
   } catch (err) {
-    console.error('[LM-Source][Storage] remove() failed for keys:', keys, err);
+    console.error('[AnyLLM][Storage] remove() failed for keys:', keys, err);
     return false;
   }
 }
@@ -139,13 +139,13 @@ async function getAll() {
   try {
     return await chrome.storage.local.get(null);
   } catch (err) {
-    console.error('[LM-Source][Storage] getAll() failed:', err);
+    console.error('[AnyLLM][Storage] getAll() failed:', err);
     return {};
   }
 }
 
 /**
- * Clear every key belonging to LM-Source (prefix `lms::`).
+ * Clear every key belonging to AnyLLM (prefix `anyllm::`).
  * Leaves unrelated extension storage untouched.
  *
  * @returns {Promise<void>}
@@ -153,11 +153,11 @@ async function getAll() {
 async function clearAll() {
   try {
     const all = await getAll();
-    const lmsKeys = Object.keys(all).filter(k => k.startsWith('lms::'));
-    if (lmsKeys.length) await chrome.storage.local.remove(lmsKeys);
-    console.log('[LM-Source][Storage] Cleared all LM-Source data:', lmsKeys.length, 'keys.');
+    const anyllmKeys = Object.keys(all).filter(k => k.startsWith('anyllm::'));
+    if (anyllmKeys.length) await chrome.storage.local.remove(anyllmKeys);
+    console.log('[AnyLLM][Storage] Cleared all AnyLLM data:', anyllmKeys.length, 'keys.');
   } catch (err) {
-    console.error('[LM-Source][Storage] clearAll() failed:', err);
+    console.error('[AnyLLM][Storage] clearAll() failed:', err);
   }
 }
 
@@ -166,7 +166,7 @@ async function clearAll() {
 /**
  * Check current chrome.storage.local usage against the self-imposed 2 MB quota.
  * Logs a warning if > 80 % full.
- * Automatically evicts LRU (least recently used) LM-Source entries if > 90 % full.
+ * Automatically evicts LRU (least recently used) AnyLLM entries if > 90 % full.
  *
  * @returns {Promise<{ usedBytes: number, quotaBytes: number, usedPercent: number }>}
  */
@@ -177,30 +177,30 @@ async function checkStorageQuota() {
 
     if (usedPercent >= QUOTA_EVICT_THRESHOLD) {
       console.warn(
-        `[LM-Source][Storage] ⚠ Storage at ${(usedPercent * 100).toFixed(1)}% of ${QUOTA_BYTES / 1024} KB budget. ` +
+        `[AnyLLM][Storage] ⚠ Storage at ${(usedPercent * 100).toFixed(1)}% of ${QUOTA_BYTES / 1024} KB budget. ` +
         `Evicting LRU entries…`
       );
       await _evictLRU();
     } else if (usedPercent >= QUOTA_WARN_THRESHOLD) {
       console.warn(
-        `[LM-Source][Storage] ⚠ Storage at ${(usedPercent * 100).toFixed(1)}% of ${QUOTA_BYTES / 1024} KB budget.`
+        `[AnyLLM][Storage] ⚠ Storage at ${(usedPercent * 100).toFixed(1)}% of ${QUOTA_BYTES / 1024} KB budget.`
       );
     } else {
       console.log(
-        `[LM-Source][Storage] Storage OK: ${(usedBytes / 1024).toFixed(1)} KB / ${QUOTA_BYTES / 1024} KB ` +
+        `[AnyLLM][Storage] Storage OK: ${(usedBytes / 1024).toFixed(1)} KB / ${QUOTA_BYTES / 1024} KB ` +
         `(${(usedPercent * 100).toFixed(1)}% used).`
       );
     }
 
     return { usedBytes, quotaBytes: QUOTA_BYTES, usedPercent };
   } catch (err) {
-    console.error('[LM-Source][Storage] checkStorageQuota() failed:', err);
+    console.error('[AnyLLM][Storage] checkStorageQuota() failed:', err);
     return { usedBytes: 0, quotaBytes: QUOTA_BYTES, usedPercent: 0 };
   }
 }
 
 /**
- * Evict the oldest LM-Source entries until usage drops below the eviction threshold.
+ * Evict the oldest AnyLLM entries until usage drops below the eviction threshold.
  * Entries are sorted by their `_updatedAt` timestamp (oldest first).
  *
  * @private
@@ -210,10 +210,10 @@ async function _evictLRU() {
   try {
     const all = await getAll();
 
-    // Collect only LM-Source entries that carry a timestamp
+    // Collect only AnyLLM entries that carry a timestamp
     const candidates = Object.entries(all)
       .filter(([key, val]) =>
-        key.startsWith('lms::') &&
+        key.startsWith('anyllm::') &&
         val !== null &&
         typeof val === 'object' &&
         typeof val._updatedAt === 'number'
@@ -229,9 +229,9 @@ async function _evictLRU() {
       if (usedBytes / QUOTA_BYTES < QUOTA_EVICT_THRESHOLD) break;
     }
 
-    console.log(`[LM-Source][Storage] Evicted ${removed} LRU entries.`);
+    console.log(`[AnyLLM][Storage] Evicted ${removed} LRU entries.`);
   } catch (err) {
-    console.error('[LM-Source][Storage] _evictLRU() failed:', err);
+    console.error('[AnyLLM][Storage] _evictLRU() failed:', err);
   }
 }
 
@@ -493,7 +493,7 @@ async function updateInCollection(platform, conversationId, type, itemId, update
   const collection = (await get(key)) || [];
   const idx = collection.findIndex(item => item.id === itemId);
   if (idx === -1) {
-    console.warn(`[LM-Source][Storage] Item ${itemId} not found in ${key}`);
+    console.warn(`[AnyLLM][Storage] Item ${itemId} not found in ${key}`);
     return false;
   }
   collection[idx] = { ...collection[idx], ...updates };
@@ -514,7 +514,7 @@ async function removeFromCollection(platform, conversationId, type, itemId) {
   const collection = (await get(key)) || [];
   const filtered = collection.filter(item => item.id !== itemId);
   if (filtered.length === collection.length) {
-    console.warn(`[LM-Source][Storage] Item ${itemId} not found in ${key}`);
+    console.warn(`[AnyLLM][Storage] Item ${itemId} not found in ${key}`);
     return false;
   }
   return set(key, filtered);

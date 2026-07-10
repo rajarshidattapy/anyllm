@@ -1,5 +1,5 @@
 // src/services/handoffService.js
-// LM-Source — Context Handoff Service (P2.7)
+// AnyLLM — Context Handoff Service (P2.7)
 //
 // Extracts context from the current conversation and provides delivery methods:
 // 1. Copy to Clipboard
@@ -13,7 +13,7 @@ import { pinMessage } from './pinService.js';
 
 /**
  * Generate the structured handoff prompt.
- * @param {import('../adapters/baseAdapter.js').PlatformAdapter} adapterRef
+ * @param {import('../adapters/adapter.js').PlatformAdapter} adapterRef
  * @returns {string} The formatted prompt template
  */
 export function generateHandoffPrompt(adapterRef) {
@@ -31,7 +31,7 @@ export async function deliverToClipboard(prompt) {
     await navigator.clipboard.writeText(prompt);
     return true;
   } catch (e) {
-    console.error('[LM-Source][HandoffService] Failed to write clipboard:', e);
+    console.error('[AnyLLM][HandoffService] Failed to write clipboard:', e);
     return false;
   }
 }
@@ -59,7 +59,7 @@ export async function deliverToPinboard(prompt, platform, conversationId) {
  */
 export function deliverToNewTab(targetPlatform, prompt) {
   chrome.runtime.sendMessage({
-    type: 'LMS_DELIVER_HANDOFF_NEW_TAB',
+    type: 'ANYLLM_DELIVER_HANDOFF_NEW_TAB',
     targetPlatform,
     prompt
   });
